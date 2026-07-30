@@ -36,14 +36,14 @@ FLEX_SHARE = {
     "TE": 0.10,
 }
 
-# --- Scoring (confirmed 2026-07-30: full PPR, 6-pt passing TD) ---
+# --- Scoring (default half-PPR — confirm league settings, see DESIGN.md §12.5) ---
 SCORING = {
     "pass_yds": 0.04,
-    "pass_td": 6,
+    "pass_td": 4,
     "pass_int": -2,
     "rush_yds": 0.10,
     "rush_td": 6,
-    "rec": 1,             # PPR value: 0 = standard, 0.5 = half-PPR, 1 = full PPR
+    "rec": 0.5,          # PPR value: 0 = standard, 0.5 = half-PPR, 1 = full PPR
     "rec_yds": 0.10,
     "rec_td": 6,
     "fumbles_lost": -2,

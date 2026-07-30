@@ -4,6 +4,25 @@ Running build log — update every session. Newest entry on top.
 
 ---
 
+## 2026-07-30 — League settings confirmed: 12 teams, full PPR, 6-pt pass TD
+
+Answered part of the §12 open-questions backlog. Updated `config.py` (snapshotted first, per
+[CLAUDE.md](CLAUDE.md)) and `DESIGN.md` §12/§13:
+- 12 teams (already the default — confirmed, no change).
+- Single QB, not superflex (already the default — confirmed, no change).
+- **Full PPR** (`rec: 1`, was half-PPR `0.5`).
+- **6-point passing TD** (`pass_td: 6`, was 4).
+
+Verified: `pytest` still 32/32 (tests compute expected values from `config.SCORING` dynamically,
+so they didn't need updating for the scoring change).
+
+**Still open before the draft board is real** (§12): `LEAGUE_ID` + ESPN credentials (needed to
+fetch anything at all), remaining roster slot confirmation (RB/WR/TE/FLEX/K/DST counts, bench/IR
+size — still on the §13 defaults), draft date, and whether there's a TE premium or other scoring
+quirks beyond what's now confirmed.
+
+---
+
 ## 2026-07-30 — Phase 0 + Phase 1 scaffold
 
 Scaffolded the repo per [DESIGN.md](DESIGN.md) §14 (Phase 0 spine + Phase 1 draft board).

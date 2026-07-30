@@ -303,15 +303,24 @@ Make projection/ranking/ADP **pluggable sources** so upgrades (e.g. FantasyPros)
 
 ## 12. Open questions — backlog
 
-**Blocks accurate draft board (Phase 1):**
-1. **Roster slots** — QB (1 or superflex/2QB?), RB/WR/TE/**FLEX** counts, K & DST?, bench + IR size.
-2. **# of teams** (8/10/12/14?) — sets replacement levels & scarcity.
+**Confirmed 2026-07-30** (applied to `config.py`):
+- **# of teams**: 12.
+- **QB format**: single QB (not superflex).
+- **PPR**: full PPR (1 pt/reception).
+- **Passing TD**: 6 points (not the 4-pt default).
+
+**Still blocks accurate draft board (Phase 1):**
+1. **ESPN league identity** — `LEAGUE_ID` (from the league URL) + `ESPN_SWID`/`ESPN_S2` cookies,
+   needed to actually fetch rosters/projections. See `config.py` TODO and §9 for how ESPN auth works.
+2. **Roster slots** — RB/WR/TE/**FLEX** counts, K & DST?, bench + IR size — still using the §13
+   defaults (2 RB / 2 WR / 1 TE / 1 FLEX / 1 K / 1 DST, bench 7, 1 IR); confirm against real league settings.
 3. **Draft date** — runway.
 
 **Quality / scope:**
 4. **Projection source** — ESPN-only (free/easy) vs add FantasyPros consensus (better; paid/scrape) vs
    blend. *Recommendation: ESPN + Sleeper ADP for v1, pluggable.*
-5. **Scoring specifics** — confirm half-PPR; TE-premium? 6-pt pass TD? yardage/other bonuses?
+5. **Remaining scoring specifics** — TE-premium? Any other yardage/bonus quirks beyond the confirmed
+   full-PPR / 6-pt-passing-TD above?
 
 **Phase 2 research:**
 6. Does ESPN expose **live draft picks** via API (auto-sync) or is manual mark-drafted required?
@@ -324,7 +333,8 @@ Make projection/ranking/ADP **pluggable sources** so upgrades (e.g. FantasyPros)
 
 ## 13. Recommended starting defaults (refine when answers land)
 
-- **12-team**, **half-PPR**, starters **1 QB / 2 RB / 2 WR / 1 TE / 1 FLEX / 1 K / 1 DST**, bench ~7, 1 IR.
+- **12-team** (confirmed), **full PPR, 6-pt passing TD** (confirmed), starters
+  **1 QB / 2 RB / 2 WR / 1 TE / 1 FLEX / 1 K / 1 DST**, bench ~7, 1 IR (still defaults — confirm).
 - Projections **ESPN**; ADP **Sleeper**; advanced stats **nfl-data-py**; Vegas via Odds API.
 - Everything config-driven so real settings slot in without rework.
 
