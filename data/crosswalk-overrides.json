@@ -1,0 +1,4 @@
+{
+  "_comment": "espn_id (string) -> {gsis_id, note}. For players crosswalk.heal() can't resolve automatically (name mismatches, traded/renamed players, etc).",
+  "_example": {"gsis_id": "00-0012345", "note": "why this needed a manual override"}
+}

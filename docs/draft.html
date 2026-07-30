@@ -1,0 +1,116 @@
+<meta charset="utf-8" />
+<title>Draft Board — Fantasy Football</title>
+<link rel="stylesheet" href="assets/style.css" />
+<main>
+  <h1>Draft Board</h1>
+  <div class="controls">
+    <label>Position
+      <select id="posFilter">
+        <option value="">All</option>
+        <option>QB</option><option>RB</option><option>WR</option>
+        <option>TE</option><option>K</option><option>DST</option>
+      </select>
+    </label>
+    <label>Search <input type="text" id="search" placeholder="player name…" /></label>
+    <label><span class="tooltip" title="Positions you still need — matching rows are highlighted">My need</span>
+      <select id="needFilter" multiple size="1">
+        <option value="QB">QB</option><option value="RB">RB</option><option value="WR">WR</option>
+        <option value="TE">TE</option><option value="K">K</option><option value="DST">DST</option>
+      </select>
+    </label>
+    <span id="scarcity" style="color: var(--muted); font-size: 13px"></span>
+  </div>
+  <table id="board">
+    <thead>
+      <tr>
+        <th data-key="vbd_rank">#</th>
+        <th data-key="name">Player</th>
+        <th data-key="position">Pos</th>
+        <th data-key="pro_team">Team</th>
+        <th data-key="bye_week">Bye</th>
+        <th data-key="tier">Tier</th>
+        <th data-key="projected_points"
+            ><span class="tooltip" title="Season projection, applying league scoring config">Proj Pts</span></th>
+        <th data-key="vbd"
+            ><span class="tooltip" title="Value over the replacement-level player at the same position">VBD</span></th>
+        <th data-key="adp"
+            ><span class="tooltip" title="Average Draft Position (Sleeper)">ADP</span></th>
+        <th data-key="adp_value"
+            ><span class="tooltip" title="ADP minus VBD rank. Positive = sleeper (going later than his value); negative = reach.">ADP Δ</span></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+  let players = [];
+  let sortKey = "vbd_rank";
+  let sortAsc = true;
+
+  function render() {
+    const pos = document.getElementById("posFilter").value;
+    const q = document.getElementById("search").value.trim().toLowerCase();
+    const need = [...document.getElementById("needFilter").selectedOptions].map((o) => o.value);
+
+    let rows = players.filter((p) => {
+      if (pos && p.position !== pos) return false;
+      if (q && !p.name.toLowerCase().includes(q)) return false;
+      return true;
+    });
+    rows.sort((a, b) => {
+      const av = a[sortKey], bv = b[sortKey];
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      const cmp = typeof av === "string" ? av.localeCompare(bv) : av - bv;
+      return sortAsc ? cmp : -cmp;
+    });
+
+    const tbody = document.querySelector("#board tbody");
+    tbody.innerHTML = rows
+      .map((p) => {
+        const highlight = need.includes(p.position) ? ' style="background:#182a20"' : "";
+        const adpColor = p.adp_value > 0 ? "var(--good)" : p.adp_value < 0 ? "var(--bad)" : "var(--muted)";
+        return `<tr${highlight}>
+          <td>${p.vbd_rank ?? ""}</td>
+          <td>${p.name}</td>
+          <td class="pos-${p.position}">${p.position}</td>
+          <td>${p.pro_team ?? ""}</td>
+          <td>${p.bye_week ?? ""}</td>
+          <td><span class="tier-badge">${p.tier ?? ""}</span></td>
+          <td>${p.projected_points?.toFixed?.(1) ?? ""}</td>
+          <td>${p.vbd?.toFixed?.(1) ?? ""}</td>
+          <td>${p.adp ?? ""}</td>
+          <td style="color:${adpColor}">${p.adp_value ?? ""}</td>
+        </tr>`;
+      })
+      .join("");
+  }
+
+  document.querySelectorAll("#board th[data-key]").forEach((th) => {
+    th.addEventListener("click", () => {
+      const key = th.dataset.key;
+      sortAsc = sortKey === key ? !sortAsc : true;
+      sortKey = key;
+      render();
+    });
+  });
+  ["posFilter", "search", "needFilter"].forEach((id) =>
+    document.getElementById(id).addEventListener("input", render)
+  );
+
+  renderHealthBanner(document.querySelector("main"));
+  fetch("data/draft-board.json", { cache: "no-store" })
+    .then((r) => r.json())
+    .then((board) => {
+      players = board.players || [];
+      document.getElementById("scarcity").textContent =
+        "Scarcity (dropoff to replacement): " +
+        Object.entries(board.scarcity || {}).map(([k, v]) => `${k} ${v}`).join(" · ");
+      render();
+    })
+    .catch((err) => {
+      document.querySelector("#board tbody").innerHTML =
+        `<tr><td colspan="10" class="placeholder">No draft-board.json yet — run the pipeline. (${err.message})</td></tr>`;
+    });
+</script>

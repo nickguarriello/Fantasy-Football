@@ -1,0 +1,86 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --border: #2a2e38;
+  --text: #e6e8eb;
+  --muted: #8b909c;
+  --accent: #4f8cff;
+  --good: #3ecf8e;
+  --warn: #e8b13a;
+  --bad: #e8543a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header.topnav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+header.topnav .brand {
+  font-weight: 700;
+  margin-right: 16px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+header.topnav a {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+header.topnav a:hover { color: var(--text); background: #1f2330; }
+header.topnav a.active { color: var(--text); background: #1f2330; }
+
+main { padding: 16px; max-width: 1200px; margin: 0 auto; }
+
+.banner {
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+}
+.banner.ok { border-color: var(--good); color: var(--good); }
+.banner.degraded { border-color: var(--warn); color: var(--warn); }
+.banner.error { border-color: var(--bad); color: var(--bad); }
+
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+th { color: var(--muted); font-weight: 600; cursor: pointer; user-select: none; position: sticky; top: 0; background: var(--bg); }
+th:hover { color: var(--text); }
+tr:hover td { background: #14171f; }
+
+.controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+select, input[type="text"] {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 8px; font-size: 14px;
+}
+
+.tier-badge {
+  display: inline-block; min-width: 20px; text-align: center;
+  border-radius: 4px; padding: 1px 6px; font-size: 12px; font-weight: 600;
+  background: #1f2330; color: var(--accent);
+}
+
+.tooltip { color: var(--muted); cursor: help; border-bottom: 1px dotted var(--muted); }
+
+.placeholder { color: var(--muted); padding: 40px; text-align: center; }
+
+.pos-QB { color: #e8543a; } .pos-RB { color: #3ecf8e; } .pos-WR { color: #4f8cff; }
+.pos-TE { color: #e8b13a; } .pos-K { color: #b58bff; } .pos-DST { color: #8b909c; }

@@ -1,0 +1,37 @@
+name: pipeline
+
+on:
+  schedule:
+    # Tue/Wed post-MNF/post-waivers. Add a Sunday-AM entry in-season for final inactives
+    # (e.g. '0 14 * * 0' ~ 2h before the early slate — adjust for your timezone/kickoff).
+    - cron: "0 12 * * 2,3"
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Write ESPN creds
+        env:
+          ESPN_SWID: ${{ secrets.ESPN_SWID }}
+          ESPN_S2: ${{ secrets.ESPN_S2 }}
+        run: printf 'ESPN_SWID="%s"\nESPN_S2="%s"\n' "$ESPN_SWID" "$ESPN_S2" > espn_credentials.py
+      - run: python -m pipeline.init_db
+      - run: python main.py --mode full
+      - name: Commit data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data/ data/player-crosswalk.csv
+          git diff --staged --quiet || git commit -m "data: run $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
+      - name: Alert on degraded output
+        run: python -m pipeline.health

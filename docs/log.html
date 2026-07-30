@@ -1,0 +1,36 @@
+<meta charset="utf-8" />
+<title>Log / Health — Fantasy Football</title>
+<link rel="stylesheet" href="assets/style.css" />
+<main>
+  <h1>Log / Health</h1>
+  <section>
+    <h2>Health (output completeness)</h2>
+    <table><tbody id="health"></tbody></table>
+  </section>
+  <section>
+    <h2>Validation (data integrity)</h2>
+    <table><tbody id="validation"></tbody></table>
+  </section>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+  function renderChecks(target, checks) {
+    document.getElementById(target).innerHTML = checks
+      .map(
+        (c) =>
+          `<tr><td style="width:100px"><span class="banner ${c.status === "pass" || c.status === "ok" ? "ok" : c.status === "warn" || c.status === "degraded" ? "degraded" : "error"}" style="display:inline-block;padding:2px 8px">${c.status}</span></td>
+           <td>${c.check}</td><td style="color:var(--muted)">${c.detail}</td></tr>`
+      )
+      .join("");
+  }
+
+  fetch("data/health.json", { cache: "no-store" })
+    .then((r) => r.json())
+    .then((h) => renderChecks("health", h.checks))
+    .catch((e) => (document.getElementById("health").innerHTML = `<tr><td class="placeholder">No health.json yet (${e.message})</td></tr>`));
+
+  fetch("data/validation-report.json", { cache: "no-store" })
+    .then((r) => r.json())
+    .then((v) => renderChecks("validation", v))
+    .catch((e) => (document.getElementById("validation").innerHTML = `<tr><td class="placeholder">No validation-report.json yet (${e.message})</td></tr>`));
+</script>

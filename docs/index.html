@@ -1,0 +1,31 @@
+<meta charset="utf-8" />
+<title>Fantasy Football Dashboard</title>
+<link rel="stylesheet" href="assets/style.css" />
+<main>
+  <h1>Fantasy Football Dashboard</h1>
+  <p style="color: var(--muted)">
+    Self-hosted draft + season dashboard. Data refreshes on a schedule via GitHub Actions —
+    see <a href="log.html">Log/Health</a> for pipeline status.
+  </p>
+  <div id="meta" style="color: var(--muted); font-size: 13px; margin-bottom: 16px"></div>
+  <ul>
+    <li><a href="draft.html">Draft Board</a> — rankings, tiers, VBD, ADP value</li>
+    <li><a href="assistant.html">Draft Assistant</a> — live best-available</li>
+    <li><a href="startsit.html">Start/Sit</a></li>
+    <li><a href="waivers.html">Waivers</a></li>
+    <li><a href="matchup.html">Matchup</a></li>
+    <li><a href="trades.html">Trades</a></li>
+    <li><a href="playoff.html">Playoffs</a></li>
+  </ul>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+  renderHealthBanner(document.querySelector("main"));
+  fetch("data/meta.json", { cache: "no-store" })
+    .then((r) => r.json())
+    .then((m) => {
+      document.getElementById("meta").textContent =
+        `Season ${m.season} · Week ${m.current_week ?? "?"} · generated ${m.generated_at}`;
+    })
+    .catch(() => {});
+</script>
