@@ -25,7 +25,13 @@ def fetch_schedule_and_vegas(conn: sqlite3.Connection) -> dict:
         print(f"fetch_nfl.schedule: FAILED ({exc}) — preserving last good data")
         return {"status": "skipped", "reason": str(exc)}
 
+    # Bye weeks must come from regular-season games only — nflverse's schedule table also
+    # carries playoff rows (game_type WC/DIV/CON/SB), where eliminated teams "missing" from a
+    # week would otherwise look like a false bye.
+    reg_df = df[df["game_type"] == "REG"] if "game_type" in df.columns else df
+
     sched_rows, vegas_rows = [], []
+    team_weeks_played: dict[str, set[int]] = {}
     for _, r in df.iterrows():
         week = int(r["week"]) if r.get("week") is not None else None
         if week is None:
@@ -45,6 +51,22 @@ def fetch_schedule_and_vegas(conn: sqlite3.Connection) -> dict:
                     r.get("total_line"),
                 )
             )
+
+    for _, r in reg_df.iterrows():
+        week = int(r["week"]) if r.get("week") is not None else None
+        if week is None:
+            continue
+        for side in ("home_team", "away_team"):
+            team = r.get(side)
+            if team:
+                team_weeks_played.setdefault(team, set()).add(week)
+
+    if team_weeks_played:
+        max_week = max(w for weeks in team_weeks_played.values() for w in weeks)
+        for team, weeks_played in team_weeks_played.items():
+            for week in range(1, max_week + 1):
+                if week not in weeks_played:
+                    sched_rows.append((team, config.YEAR, week, None, 1))
 
     conn.executemany(
         "INSERT OR REPLACE INTO dim_schedule (pro_team, season, week, opponent, is_bye) VALUES (?, ?, ?, ?, ?)",
