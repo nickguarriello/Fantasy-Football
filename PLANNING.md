@@ -4,6 +4,25 @@ Running build log — update every session. Newest entry on top.
 
 ---
 
+## 2026-08-03 — Bye weeks fixed (were always blank — real bug, not a data gap)
+
+`fetch_nfl.fetch_schedule_and_vegas` wrote every `dim_schedule` row with `is_bye` hardcoded to
+`0` — bye weeks were never actually computed, so `bye_week` was blank on the draft board
+regardless of whether `nfl_data_py` returned data. Confirmed live: the last CI run pulled 544
+schedule rows successfully, but 0/700 players had a bye_week set. Fixed by computing each team's
+bye as the week(s) missing from their `game_type == 'REG'` rows; verified with a synthetic
+3-team round-robin (real `nfl_data_py` still can't install locally — Python 3.14 has no
+numpy<2.0 wheel). Re-ran the live pipeline: **609/700 players now have a bye_week**.
+
+Remaining 91 missing: 51 are free agents with no `pro_team` (correct — no team, no bye), but
+**21 LAR + 19 WSH players are real mismatches** — ESPN's team-abbreviation code for the Rams
+and/or Washington likely doesn't match nflverse's (e.g. WSH vs WAS is a known inconsistency
+between NFL data providers). Not fixed yet — need to inspect nflverse's actual `home_team`/
+`away_team` codes for these two teams (can't verify locally without `nfl_data_py`; check via a
+real CI log or a temporary debug print) before guessing at a `POSITION_MAP`-style translation.
+
+---
+
 ## 2026-08-03 — Live on GitHub Pages; Phase 2 draft assistant built; ADP fuzzy match added
 
 **Site is live**: https://nickguarriello.github.io/Fantasy-Football/ (public repo — required for
