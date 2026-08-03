@@ -55,6 +55,10 @@ attempts expired before landing — codes need to be used within GitHub's ~15min
 1. **Draft assistant hasn't been tested against an actual live draft** — the sync timing (how
    fresh `draft-state.json` is depends on when the pipeline last ran) and UX under real time
    pressure are unverified. Consider a tighter-interval `workflow_dispatch` cadence on draft day.
+   Discussed two ways to test this without a real draft: (a) an ESPN mock/practice draft if the
+   league offers one — **user's preferred approach**, tests the real `mDraftDetail` mid-draft
+   behavior we haven't seen yet; (b) synthetic `fact_draft_pick` rows to stress-test the UI at
+   full scale. Deferred both for now ("we'll come back to that") — pick up (a) first when ready.
 2. `nfl_data_py` endpoints (injuries/snaps/schedule) still 404ing — bye weeks stay blank until
    that resolves; recheck as the season gets closer.
 3. Draft date still just "likely later in August" — ask again closer to the time.
