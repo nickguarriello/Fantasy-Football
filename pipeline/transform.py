@@ -7,31 +7,65 @@ import pandas as pd
 
 import config
 
+SLEEPER_POSITION_MAP = {"DEF": "DST"}  # Sleeper calls it DEF; our convention (fetch_espn.py) is DST
+
+
+def _fuzzy_adp_matches(unmatched: pd.DataFrame, adp: pd.DataFrame, min_score=90, min_gap=5) -> list[tuple]:
+    """Position-scoped fuzzy fallback for names an exact match misses (e.g. suffixes: Sleeper's
+    'James Cook' vs ESPN's 'James Cook III'). Position-scoped both to cut the candidate pool and
+    to avoid cross-position false positives. Only accepted when unambiguous, same rule as
+    crosswalk.py's fuzzy match: top score >= min_score AND a clear gap over the runner-up."""
+    from rapidfuzz import fuzz, process
+
+    rows = []
+    adp_by_pos = {pos: g[["name", "adp"]].drop_duplicates("name") for pos, g in adp.groupby("position")}
+    for p in unmatched.itertuples():
+        pool = adp_by_pos.get(p.position)
+        if pool is None or pool.empty:
+            continue
+        matches = process.extract(p.name, pool["name"].tolist(), scorer=fuzz.WRatio, limit=2)
+        if not matches:
+            continue
+        top_name, top_score, _ = matches[0]
+        if top_score < min_score:
+            continue
+        if len(matches) > 1 and (top_score - matches[1][1]) < min_gap:
+            continue  # ambiguous — two close candidates, don't guess
+        adp_val = pool.loc[pool["name"] == top_name, "adp"].iloc[0]
+        rows.append((int(p.player_id), config.YEAR, "sleeper", float(adp_val)))
+    return rows
+
 
 def resolve_adp(conn: sqlite3.Connection) -> dict:
-    """Match staged Sleeper ADP rows (by name) onto dim_players.player_id -> fact_adp."""
+    """Match staged Sleeper ADP rows onto dim_players.player_id -> fact_adp: exact
+    name+position match first, then a position-scoped fuzzy name fallback for the rest.
+    Scoping by position (not just name) avoids a same-named player at a different position
+    stealing another player's ADP."""
     has_stg = conn.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name='stg_sleeper_adp'"
     ).fetchone()
     if not has_stg:
         return {"status": "skipped", "reason": "no staged ADP"}
 
-    players = pd.read_sql("SELECT player_id, name FROM dim_players", conn)
+    players = pd.read_sql("SELECT player_id, name, position FROM dim_players", conn)
     players["_key"] = players["name"].str.strip().str.lower()
-    adp = pd.read_sql("SELECT name, adp FROM stg_sleeper_adp", conn)
+    adp = pd.read_sql("SELECT name, position, adp FROM stg_sleeper_adp", conn)
     adp["_key"] = adp["name"].str.strip().str.lower()
+    adp["position"] = adp["position"].replace(SLEEPER_POSITION_MAP)
 
-    merged = adp.merge(players, on="_key", suffixes=("_adp", "_player"))
-    rows = [
-        (int(r.player_id), config.YEAR, "sleeper", float(r.adp))
-        for r in merged.itertuples()
-    ]
+    exact = adp.merge(players, on=["_key", "position"], suffixes=("_adp", "_player"))
+    rows = [(int(r.player_id), config.YEAR, "sleeper", float(r.adp)) for r in exact.itertuples()]
+
+    unmatched = players[~players["player_id"].isin(exact["player_id"])]
+    fuzzy_rows = _fuzzy_adp_matches(unmatched, adp) if len(unmatched) else []
+    rows.extend(fuzzy_rows)
+
     conn.executemany(
         "INSERT OR REPLACE INTO fact_adp (player_id, season, source, adp) VALUES (?, ?, ?, ?)",
         rows,
     )
     conn.commit()
-    return {"status": "ok", "matched": len(rows), "staged": len(adp)}
+    return {"status": "ok", "matched": len(rows), "exact": len(exact), "fuzzy": len(fuzzy_rows), "staged": len(adp)}
 
 
 def player_season_view(conn: sqlite3.Connection) -> pd.DataFrame:
