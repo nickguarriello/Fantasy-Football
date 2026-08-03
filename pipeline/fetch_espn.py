@@ -97,6 +97,46 @@ def _upsert_players(conn: sqlite3.Connection, players) -> int:
     return len(player_rows)
 
 
+def fetch_draft_picks(conn: sqlite3.Connection, league) -> dict:
+    """Writes fact_draft_pick from ESPN's own live draft feed (league.draft / refresh_draft()).
+
+    Resolves DESIGN.md §12.6: yes, ESPN exposes live picks via the `mDraftDetail` view — no
+    manual-only fallback needed. `league.draft` is populated automatically on League() construction
+    (once the draft has actually started; empty pre-draft, verified against the real league).
+    Gotcha (found by reading espn_api's source, not documented): `_fetch_draft()` *appends* to
+    `league.draft` rather than replacing it, so polling via `refresh_draft()` repeatedly would
+    accumulate duplicate picks — reset the list ourselves before each refresh.
+    """
+    if league is None:
+        return {"status": "skipped", "reason": "no league"}
+
+    league.draft = []
+    league.refresh_draft()
+
+    rows = [
+        (
+            i + 1,
+            config.YEAR,
+            pick.round_num,
+            pick.round_pick,
+            pick.team.team_id if pick.team else None,
+            pick.team.team_name if pick.team else None,
+            pick.playerId,
+            pick.playerName,
+        )
+        for i, pick in enumerate(league.draft)
+    ]
+    conn.execute("DELETE FROM fact_draft_pick WHERE season = ?", (config.YEAR,))
+    conn.executemany(
+        """INSERT INTO fact_draft_pick
+           (pick_no, season, round, round_pick, team_id, team_name, player_id, player_name)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        rows,
+    )
+    conn.commit()
+    return {"status": "ok", "picks": len(rows)}
+
+
 def fetch_rosters_and_projections(conn: sqlite3.Connection, league) -> dict:
     """Writes dim_players (upsert) + fact_roster + fact_projection(source='espn') for rostered
     players, and separately for the full player pool (draft board's real source pre-draft)."""
@@ -105,12 +145,16 @@ def fetch_rosters_and_projections(conn: sqlite3.Connection, league) -> dict:
 
     week = current_week(league)
 
-    roster_players, roster_rows = [], []
+    roster_players, roster_rows, team_rows = [], [], []
     for team in league.teams:
+        team_rows.append((team.team_id, config.YEAR, team.team_name))
         for player in team.roster:
             roster_players.append(player)
             roster_rows.append((team.team_id, player.playerId, getattr(player, "lineupSlot", None), config.YEAR))
     rostered_count = _upsert_players(conn, roster_players)
+    conn.executemany(
+        "INSERT OR REPLACE INTO dim_team (team_id, season, team_name) VALUES (?, ?, ?)", team_rows
+    )
     conn.executemany(
         "INSERT OR REPLACE INTO fact_roster (team_id, player_id, slot, season) VALUES (?, ?, ?, ?)",
         roster_rows,
@@ -118,6 +162,8 @@ def fetch_rosters_and_projections(conn: sqlite3.Connection, league) -> dict:
 
     pool = league.free_agents(size=PLAYER_POOL_SIZE)
     pool_count = _upsert_players(conn, pool)
+
+    draft_result = fetch_draft_picks(conn, league)
 
     conn.execute(
         "INSERT OR REPLACE INTO meta (key, value) VALUES ('current_week', ?)", (str(week),)
@@ -127,6 +173,7 @@ def fetch_rosters_and_projections(conn: sqlite3.Connection, league) -> dict:
         "status": "ok",
         "rostered_players": rostered_count,
         "player_pool": pool_count,
+        "draft_picks": draft_result.get("picks", 0),
         "current_week": week,
     }
 

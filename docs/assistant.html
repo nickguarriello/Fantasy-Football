@@ -3,6 +3,225 @@
 <link rel="stylesheet" href="assets/style.css" />
 <main>
   <h1>Draft Assistant</h1>
-  <p class="placeholder">Phase 2 — live best-available assistant. Backed by pipeline/draft.py:best_available().</p>
+  <p style="color: var(--muted); font-size: 13px; max-width: 70ch">
+    Auto-syncs already-drafted players from ESPN whenever the pipeline runs (<span id="syncedAt"></span>).
+    Between runs, mark picks manually below — they're combined with the synced list and kept in
+    this browser only. <a href="log.html">Log/Health</a> shows when the pipeline last ran.
+  </p>
+
+  <div class="controls">
+    <label>My team
+      <select id="myTeam"><option value="">Select…</option></select>
+    </label>
+    <label>Position
+      <select id="posFilter">
+        <option value="">All</option>
+        <option>QB</option><option>RB</option><option>WR</option>
+        <option>TE</option><option>K</option><option>DST</option>
+      </select>
+    </label>
+    <button id="undoBtn">Undo last manual pick</button>
+    <button id="clearBtn">Clear manual picks</button>
+    <span id="draftedCount" style="color: var(--muted); font-size: 13px"></span>
+  </div>
+
+  <div id="runAlert"></div>
+
+  <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start">
+    <div style="flex: 2; min-width: 420px">
+      <h2 style="font-size: 15px; color: var(--muted)">Best available</h2>
+      <table id="board">
+        <thead>
+          <tr>
+            <th>Player</th><th>Pos</th><th>Team</th><th>Tier</th>
+            <th>Proj Pts</th><th>VBD</th><th>Need-adj</th><th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div style="flex: 1; min-width: 240px">
+      <h2 style="font-size: 15px; color: var(--muted)">My roster</h2>
+      <table id="myRoster"><tbody></tbody></table>
+    </div>
+  </div>
 </main>
 <script src="assets/nav.js"></script>
+<script>
+  let board = null;       // draft-board.json
+  let draftState = null;  // draft-state.json
+  const STORAGE_KEY = "ff-assistant-state";
+
+  function loadLocal() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { myTeamId: null, manualPicks: [] };
+    } catch {
+      return { myTeamId: null, manualPicks: [] };
+    }
+  }
+  function saveLocal(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+  let local = loadLocal();
+
+  function combinedDraftedOrder() {
+    // Auto picks in real pick order, then manual picks in click order — approximates recency.
+    const auto = (draftState.picks || []).map((p) => ({
+      player_id: p.player_id,
+      team_id: p.team_id,
+      mine: local.myTeamId && p.team_id === Number(local.myTeamId),
+    }));
+    const manual = local.manualPicks.map((p) => ({ player_id: p.player_id, team_id: null, mine: p.mine }));
+    return auto.concat(manual);
+  }
+
+  function draftedIds() {
+    return new Set(combinedDraftedOrder().map((p) => p.player_id));
+  }
+
+  function myRosterPlayerIds() {
+    return new Set(combinedDraftedOrder().filter((p) => p.mine).map((p) => p.player_id));
+  }
+
+  function playerById(id) {
+    return board.players.find((p) => p.player_id === id);
+  }
+
+  function renderRunAlert() {
+    const order = combinedDraftedOrder().slice(-5);
+    const counts = {};
+    for (const pick of order) {
+      const p = playerById(pick.player_id);
+      if (!p) continue;
+      counts[p.position] = (counts[p.position] || 0) + 1;
+    }
+    const runs = Object.entries(counts).filter(([, n]) => n >= 3);
+    const el = document.getElementById("runAlert");
+    if (runs.length) {
+      el.innerHTML = runs
+        .map(([pos, n]) => `<div class="banner degraded">Run on ${pos}: ${n} of the last ${order.length} picks</div>`)
+        .join("");
+    } else {
+      el.innerHTML = "";
+    }
+  }
+
+  function renderMyRoster() {
+    const mine = [...myRosterPlayerIds()].map(playerById).filter(Boolean);
+    const filled = {};
+    for (const p of mine) filled[p.position] = (filled[p.position] || 0) + 1;
+
+    const slots = board.roster_slots || {};
+    const startingPositions = Object.keys(slots).filter((s) => !["BENCH", "IR", "FLEX"].includes(s));
+    const rows = startingPositions
+      .map((pos) => `<tr><td>${pos}</td><td>${filled[pos] || 0} / ${slots[pos]}</td></tr>`)
+      .join("");
+    const startersUsed = startingPositions.reduce((sum, pos) => sum + Math.min(filled[pos] || 0, slots[pos]), 0);
+    const benchCount = mine.length - startersUsed;
+
+    document.querySelector("#myRoster tbody").innerHTML =
+      rows + `<tr><td>BENCH/FLEX</td><td>${benchCount} drafted</td></tr>` +
+      mine.map((p) => `<tr><td colspan="2" class="pos-${p.position}" style="font-size:13px">${p.name} (${p.position})</td></tr>`).join("");
+  }
+
+  function needAdjustedVbd(p, filled) {
+    const need = (board.roster_slots || {})[p.position] || 0;
+    const have = filled[p.position] || 0;
+    return p.vbd + (have < need ? 0 : -2);
+  }
+
+  function render() {
+    const pos = document.getElementById("posFilter").value;
+    const drafted = draftedIds();
+    const mine = [...myRosterPlayerIds()].map(playerById).filter(Boolean);
+    const filled = {};
+    for (const p of mine) filled[p.position] = (filled[p.position] || 0) + 1;
+
+    let rows = board.players.filter((p) => !drafted.has(p.player_id));
+    if (pos) rows = rows.filter((p) => p.position === pos);
+    rows = rows
+      .map((p) => ({ ...p, need_adj: needAdjustedVbd(p, filled) }))
+      .sort((a, b) => b.need_adj - a.need_adj)
+      .slice(0, 60);
+
+    document.querySelector("#board tbody").innerHTML = rows
+      .map(
+        (p) => `<tr>
+          <td>${p.name}</td>
+          <td class="pos-${p.position}">${p.position}</td>
+          <td>${p.pro_team ?? ""}</td>
+          <td><span class="tier-badge">${p.tier ?? ""}</span></td>
+          <td>${p.projected_points?.toFixed?.(1) ?? ""}</td>
+          <td>${p.vbd?.toFixed?.(1) ?? ""}</td>
+          <td>${p.need_adj.toFixed(1)}</td>
+          <td>
+            <button data-id="${p.player_id}" data-mine="1">Mine</button>
+            <button data-id="${p.player_id}" data-mine="0">Other</button>
+          </td>
+        </tr>`
+      )
+      .join("");
+
+    document.querySelectorAll("#board button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        local.manualPicks.push({ player_id: Number(btn.dataset.id), mine: btn.dataset.mine === "1" });
+        saveLocal(local);
+        renderAll();
+      });
+    });
+
+    document.getElementById("draftedCount").textContent = `${drafted.size} drafted (${draftState.picks.length} synced + ${local.manualPicks.length} manual)`;
+  }
+
+  function renderAll() {
+    render();
+    renderMyRoster();
+    renderRunAlert();
+  }
+
+  function initTeamSelect() {
+    const sel = document.getElementById("myTeam");
+    for (const t of draftState.teams || []) {
+      const opt = document.createElement("option");
+      opt.value = t.team_id;
+      opt.textContent = t.team_name;
+      sel.appendChild(opt);
+    }
+    if (local.myTeamId) sel.value = local.myTeamId;
+    sel.addEventListener("change", () => {
+      local.myTeamId = sel.value || null;
+      saveLocal(local);
+      renderAll();
+    });
+  }
+
+  document.getElementById("posFilter").addEventListener("input", render);
+  document.getElementById("undoBtn").addEventListener("click", () => {
+    local.manualPicks.pop();
+    saveLocal(local);
+    renderAll();
+  });
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    local.manualPicks = [];
+    saveLocal(local);
+    renderAll();
+  });
+
+  renderHealthBanner(document.querySelector("main"));
+
+  Promise.all([
+    fetch("data/draft-board.json", { cache: "no-store" }).then((r) => r.json()),
+    fetch("data/draft-state.json", { cache: "no-store" }).then((r) => r.json()),
+  ])
+    .then(([b, s]) => {
+      board = b;
+      draftState = s;
+      document.getElementById("syncedAt").textContent = `last synced ${new Date(s.generated_at).toLocaleString()}`;
+      initTeamSelect();
+      renderAll();
+    })
+    .catch((err) => {
+      document.querySelector("#board tbody").innerHTML =
+        `<tr><td colspan="8" class="placeholder">Couldn't load draft data yet — run the pipeline. (${err.message})</td></tr>`;
+    });
+</script>

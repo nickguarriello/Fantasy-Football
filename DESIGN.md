@@ -7,10 +7,11 @@
 > build the project *without* referring back to the baseball repo. (Reach back only if truly needed.)
 >
 > Copy into a fresh `Fantasy-Football` repo as the starting DESIGN/PLANNING doc.
-> Status: **Phase 0 + Phase 1 scaffolded** (2026-07-30) — repo structure, pipeline spine, and
-> draft-board valuation/UI are in place per §14. Blocked on the §12 open questions (league ID,
-> roster/teams, confirmed scoring) before the board produces real numbers. See
-> [PLANNING.md](PLANNING.md) for the running build log. Created 2026-07-30.
+> Status: **Phases 0–2 done** (2026-08-03) — live on GitHub Pages
+> (https://nickguarriello.github.io/Fantasy-Football/) with a real draft board and a live-sync
+> draft assistant, verified against the actual league (ID 1152031). Phase 3 (in-season
+> dashboard) not started. See [PLANNING.md](PLANNING.md) for the running build log.
+> Created 2026-07-30.
 
 ---
 
@@ -291,43 +292,54 @@ Make projection/ranking/ADP **pluggable sources** so upgrades (e.g. FantasyPros)
 ## 11. Phased roadmap (draft-first — the clock is the constraint)
 
 - **Phase 0 — Shared spine:** repo scaffold, config + snapshots, ESPN football fetch, crosswalk +
-  self-heal, validate/health/CI skeleton, dashboard shell, CLAUDE.md.
+  self-heal, validate/health/CI skeleton, dashboard shell, CLAUDE.md. **Done** — live on
+  GitHub Pages, scheduled + manually-dispatchable pipeline.
 - **Phase 1 — Draft board (PRIORITY, before draft day):** projections + ADP + rankings → VBD/VOR,
   tiers, scarcity, bye clustering, ADP value; sortable board page with "fills my need" highlighting.
-- **Phase 2 — Live draft assistant:** draft-state input (ESPN live API research; manual fallback) →
-  best-available given roster/needs/byes/value; positional-run alerts.
+  **Done** — verified against the real league (700 players, sane rankings/ADP-value gaps).
+- **Phase 2 — Live draft assistant:** draft-state input (ESPN live API — confirmed available,
+  §12) → best-available given roster/needs/byes/value; positional-run alerts. **Done** —
+  `fetch_espn.fetch_draft_picks()` auto-syncs on each pipeline run; `assistant.html` merges that
+  with client-side manual marks (localStorage) for picks made since the last run, tracks "my
+  roster" against `ROSTER_SLOTS`, and flags positional runs. Not yet tested against an actual
+  live draft (there hasn't been one) — verify the auto-sync timing/UX on draft day itself.
 - **Phase 3 — In-season dashboard:** weekly pipeline (Tue/Wed + Sun-AM), start/sit, waivers, matchup,
-  trades, playoff prep, full health/alert/test layer.
+  trades, playoff prep, full health/alert/test layer. Not started.
 
 ---
 
 ## 12. Open questions — backlog
 
-**Confirmed 2026-07-30** (applied to `config.py`):
-- **# of teams**: 12.
-- **QB format**: single QB (not superflex).
-- **PPR**: full PPR (1 pt/reception).
-- **Passing TD**: 6 points (not the 4-pt default).
-
-**Still blocks accurate draft board (Phase 1):**
-1. **ESPN league identity** — `LEAGUE_ID` (from the league URL) + `ESPN_SWID`/`ESPN_S2` cookies,
-   needed to actually fetch rosters/projections. See `config.py` TODO and §9 for how ESPN auth works.
-2. **Roster slots** — RB/WR/TE/**FLEX** counts, K & DST?, bench + IR size — still using the §13
-   defaults (2 RB / 2 WR / 1 TE / 1 FLEX / 1 K / 1 DST, bench 7, 1 IR); confirm against real league settings.
-3. **Draft date** — runway.
+**Confirmed 2026-08-03, pulled live from `league.settings` (authoritative — supersedes an
+earlier verbal "full PPR / 6-pt passing TD" answer that turned out wrong):**
+- **# of teams**: 12. **QB format**: single QB. **PPR**: half-PPR (0.5/reception).
+  **Passing TD**: 4 points.
+- **Roster slots**: 1 QB / 2 RB / 2 WR / 1 TE / 1 FLEX(RB-WR-TE) / 1 K / 1 D/ST, bench 5, IR 2.
+- **TE premium / other scoring quirks**: none — `league.settings.scoring_format` has a single
+  flat reception rule, no position-specific bonus line items.
+- **ESPN league identity**: `LEAGUE_ID = 1152031` set in `config.py`; `ESPN_SWID`/`ESPN_S2`
+  configured (local `espn_credentials.py`, gitignored, + GitHub repo secrets for CI).
+- **Waiver type**: priority, not FAAB (`league.settings.faab == False`).
+- **Trade deadline**: 2026-12-04. **Regular season**: 14 weeks. **Playoff teams**: 7,
+  single-week rounds.
+- **Live draft picks (§12.6, Phase 2 research)**: **yes**, ESPN exposes them —
+  `league.draft` / `league.refresh_draft()` reads the real `mDraftDetail` view, populated
+  automatically once the draft starts (empty before, verified against the real league).
+  Gotcha found by reading `espn_api`'s source (undocumented): `refresh_draft()` *appends* to
+  `league.draft` rather than replacing it, so polling requires resetting the list first —
+  handled in `fetch_espn.fetch_draft_picks()`. No manual-only fallback was needed, though
+  `assistant.html` still accepts manual marks too (for picks made since the last pipeline run).
 
 **Quality / scope:**
-4. **Projection source** — ESPN-only (free/easy) vs add FantasyPros consensus (better; paid/scrape) vs
-   blend. *Recommendation: ESPN + Sleeper ADP for v1, pluggable.*
-5. **Remaining scoring specifics** — TE-premium? Any other yardage/bonus quirks beyond the confirmed
-   full-PPR / 6-pt-passing-TD above?
+- **Projection source** — ESPN-only (free/easy) vs add FantasyPros consensus (better; paid/scrape) vs
+  blend. *Recommendation: ESPN + Sleeper ADP for v1, pluggable.* Not revisited — ESPN + Sleeper
+  is working well enough that this hasn't been a priority.
 
-**Phase 2 research:**
-6. Does ESPN expose **live draft picks** via API (auto-sync) or is manual mark-drafted required?
-
-**Later / in-season:**
-7. Waiver type (FAAB vs priority) + budget, trade deadline, playoff weeks/teams, IR rules.
-8. Vegas data source (Odds API key vs scrape).
+**Still open:**
+- **Draft date** — still just "likely later in August" as of 2026-08-03; re-ask closer to the time.
+- **Vegas data source** — nflverse's schedule table has betting lines built in (§8), so the Odds
+  API question is likely moot; unverified since `fetch_nfl`'s endpoints haven't returned data yet
+  locally (see PLANNING.md).
 
 ---
 

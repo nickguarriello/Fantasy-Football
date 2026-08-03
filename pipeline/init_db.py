@@ -80,6 +80,25 @@ CREATE TABLE IF NOT EXISTS fact_vegas (
     PRIMARY KEY (pro_team, season, week)
 );
 
+CREATE TABLE IF NOT EXISTS dim_team (
+    team_id     INTEGER NOT NULL,
+    season      INTEGER NOT NULL,
+    team_name   TEXT,
+    PRIMARY KEY (team_id, season)
+);
+
+CREATE TABLE IF NOT EXISTS fact_draft_pick (
+    pick_no     INTEGER NOT NULL,
+    season      INTEGER NOT NULL,
+    round       INTEGER,
+    round_pick  INTEGER,
+    team_id     INTEGER,
+    team_name   TEXT,
+    player_id   INTEGER,
+    player_name TEXT,
+    PRIMARY KEY (pick_no, season)
+);
+
 CREATE TABLE IF NOT EXISTS meta (
     key     TEXT PRIMARY KEY,
     value   TEXT

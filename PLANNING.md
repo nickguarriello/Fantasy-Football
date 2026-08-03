@@ -4,6 +4,66 @@ Running build log — update every session. Newest entry on top.
 
 ---
 
+## 2026-08-03 — Live on GitHub Pages; Phase 2 draft assistant built; ADP fuzzy match added
+
+**Site is live**: https://nickguarriello.github.io/Fantasy-Football/ (public repo — required for
+free-tier Pages; nothing sensitive is in the codebase, `espn_credentials.py` stays local/gitignored).
+
+**GitHub setup** (installed `gh` CLI via winget since it wasn't present; several device-flow auth
+attempts expired before landing — codes need to be used within GitHub's ~15min window):
+- Repo created, pushed, Pages enabled (`main`/`docs`).
+- `ESPN_SWID`/`ESPN_S2` set as repo secrets (piped directly from local `espn_credentials.py` into
+  `gh secret set`, never printed).
+- First `workflow_dispatch` run **failed**: `requirements.txt` pinned `pandas>=2.2`, but
+  `nfl-data-py` (0.3.3, latest on PyPI) requires `pandas<2.0` — pip's resolver had no solution.
+  Fixed by relaxing to `pandas<2.0,>=1.5`; nothing in the pipeline used a pandas-2.x-only API.
+  Re-run succeeded: 700 real players, `validate` all PASS, `health` ok, live on the site.
+  `nfl_data_py`'s injuries/snap-count endpoints 404'd (probably not published this early
+  pre-season) — degraded gracefully exactly as designed, non-fatal.
+
+**Three follow-up items tackled together** (user: "let's tackle all 3 now"):
+1. **Re-verified roster slots/scoring against `league.settings`** — unchanged from the prior
+   session's live pull (12 teams, half-PPR, 4-pt pass TD, bench 5/IR 2); no config change needed.
+2. **Fixed ADP name matching** ([pipeline/transform.py](pipeline/transform.py)): `resolve_adp()`
+   only did an exact lowercased-name join, missing suffixed names (ESPN's "James Cook III" vs
+   Sleeper's "James Cook") and — a second bug my own test caught — not scoping by position at all,
+   so a same-named player at a different position could steal another player's ADP. Fixed with a
+   name+position exact join, then a position-scoped fuzzy fallback (same unambiguous-only rule as
+   `crosswalk.py`). Real match rate: 611/700 exact → 656/700 total (45 fuzzy). Also maps Sleeper's
+   `DEF` label to our `DST` convention.
+3. **Researched + built Phase 2 (live draft assistant)**, resolving DESIGN.md §12.6:
+   - Read `espn_api`'s source directly (not just docs): `league.draft` / `league.refresh_draft()`
+     hits ESPN's real `mDraftDetail` view and **does** expose live picks — auto-sync is real, no
+     manual-only fallback needed. Undocumented gotcha found in the source: `_fetch_draft()`
+     *appends* to `league.draft` instead of replacing it, so polling would accumulate duplicates;
+     `fetch_espn.fetch_draft_picks()` resets the list before each refresh.
+   - New DB table `fact_draft_pick` (+ `dim_team` for team names) and
+     `docs/data/draft-state.json` (`report.write_draft_state()`), wired into `main.py`.
+   - [docs/assistant.html](docs/assistant.html): fully interactive, no backend needed at draft
+     time — loads `draft-board.json` + `draft-state.json`, lets you pick "my team", shows
+     best-available with need-adjusted VBD (small penalty once a position's starters are filled,
+     mirrors `pipeline/draft.py:best_available()`), tracks my roster against `ROSTER_SLOTS`,
+     flags positional runs (3+ of one position in the last 5 picks), and accepts manual
+     mark-drafted clicks (localStorage-persisted) for picks made since the last pipeline sync —
+     merged with the auto-synced list. Verified end-to-end in-browser: team selection, need-adjustment
+     kicking in exactly when a position fills, run-alert firing correctly, undo/persistence across
+     reload all worked against the real 700-player board.
+   - Added `tests/test_fetch_espn.py` and `tests/test_report.py` (duck-typed fake league/pick
+     objects — no real espn_api/network needed). 42/42 tests pass.
+
+**Known gaps / next session:**
+1. **Draft assistant hasn't been tested against an actual live draft** — the sync timing (how
+   fresh `draft-state.json` is depends on when the pipeline last ran) and UX under real time
+   pressure are unverified. Consider a tighter-interval `workflow_dispatch` cadence on draft day.
+2. `nfl_data_py` endpoints (injuries/snaps/schedule) still 404ing — bye weeks stay blank until
+   that resolves; recheck as the season gets closer.
+3. Draft date still just "likely later in August" — ask again closer to the time.
+4. DST names likely still don't resolve ADP even with the position-fix (Sleeper spells defenses
+   by city/team name, ESPN by "X D/ST" — a name-format problem the fuzzy match may not bridge;
+   not verified either way).
+
+---
+
 ## 2026-08-03 — First real draft board generated; STAT_MAP verified; NaN/JSON bug fixed
 
 Ran `python main.py --mode light` end-to-end against the live league for the first time.

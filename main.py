@@ -59,6 +59,7 @@ def main(mode: str) -> int:
     evaluated = evaluate_mod.evaluate(view)
     board = draft.build_board(evaluated)
     report.write_draft_board(board)
+    report.write_draft_state(conn)
     report.write_meta(conn)
     print(f"  wrote draft-board.json ({len(board['players'])} players)")
 

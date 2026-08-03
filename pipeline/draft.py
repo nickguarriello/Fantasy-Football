@@ -52,6 +52,7 @@ def build_board(evaluated_view: pd.DataFrame) -> dict:
         "season": config.YEAR,
         "num_teams": config.NUM_TEAMS,
         "scoring": config.SCORING,
+        "roster_slots": config.ROSTER_SLOTS,
         "scarcity": positional_scarcity(evaluated_view),
         "players": players.to_dict("records"),
     }
