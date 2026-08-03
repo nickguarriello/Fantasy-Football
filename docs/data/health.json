@@ -1,0 +1,21 @@
+{
+  "overall": "ok",
+  "degraded_checks": [],
+  "checks": [
+    {
+      "check": "output_files",
+      "status": "ok",
+      "detail": "2 files present"
+    },
+    {
+      "check": "draft_board_populated",
+      "status": "ok",
+      "detail": "700 players on board"
+    },
+    {
+      "check": "stats_fresh",
+      "status": "ok",
+      "detail": "last updated_at=2026-08-03 19:50:15"
+    }
+  ]
+}

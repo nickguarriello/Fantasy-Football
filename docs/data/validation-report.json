@@ -1,0 +1,22 @@
+[
+  {
+    "check": "players_present",
+    "status": "pass",
+    "detail": "700 players in dim_players"
+  },
+  {
+    "check": "no_duplicate_players",
+    "status": "pass",
+    "detail": "0 duplicate player_ids"
+  },
+  {
+    "check": "crosswalk_coverage",
+    "status": "warn",
+    "detail": "no rostered players to check"
+  },
+  {
+    "check": "projections_present",
+    "status": "pass",
+    "detail": "17304 ESPN projection rows"
+  }
+]
