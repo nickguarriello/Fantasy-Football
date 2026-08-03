@@ -44,7 +44,10 @@ def build_board(evaluated_view: pd.DataFrame) -> dict:
         "projected_points", "vbd", "vbd_rank", "tier", "adp", "adp_value",
     ]
     players = evaluated_view[[c for c in cols if c in evaluated_view.columns]].copy()
-    players = players.where(pd.notna(players), None)
+    # astype(object) first: on a float64 column, .where(..., None) silently recoerces None back
+    # to NaN, which json.dump then writes as the bare (invalid-JSON) token `NaN` — breaks
+    # JSON.parse in the browser. object dtype lets None actually stick, serializing as `null`.
+    players = players.astype(object).where(players.notna(), None)
     return {
         "season": config.YEAR,
         "num_teams": config.NUM_TEAMS,
