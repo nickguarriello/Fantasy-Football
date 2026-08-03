@@ -4,6 +4,54 @@ Running build log — update every session. Newest entry on top.
 
 ---
 
+## 2026-08-03 — First real draft board generated; STAT_MAP verified; NaN/JSON bug fixed
+
+Ran `python main.py --mode light` end-to-end against the live league for the first time.
+
+**`evaluate.py`'s `STAT_MAP` is verified, not just guessed** — inspected a real `free_agents()`
+payload (Jahmyr Gibbs, Josh Allen). Every key we'd guessed (`passingYards`, `passingTouchdowns`,
+`passingInterceptions`, `rushingYards`, `rushingTouchdowns`, `receivingReceptions`,
+`receivingYards`, `receivingTouchdowns`, `lostFumbles`, the three `*2PtConversions` keys) matched
+ESPN's real `projected_breakdown` exactly. No code change needed — just confidence.
+
+**Real run results:** 703 players (`league.free_agents(size=700)`, since rosters are still empty
+pre-draft), 17,304 ESPN projection rows, `validate` all PASS (crosswalk_coverage WARNs — expected,
+no one's rostered yet), `health` overall ok. Top of the board (Gibbs, McCaffrey, Nacua, Allen,
+Chase...) and ADP-value gaps (Josh Jacobs +11 sleeper, Bijan Robinson −6 reach) look directionally
+sane against real 2026 draft discourse.
+
+**Bug found and fixed** ([pipeline/draft.py](pipeline/draft.py)): `players.where(pd.notna(...),
+None)` on a float64 column silently recoerces `None` back to `NaN` (pandas has no null for
+float64 pre-nullable-dtypes); `json.dump` then wrote the bare `NaN` token — valid for Python's
+`json` module, invalid JSON — which broke `JSON.parse` in the browser and blanked the whole draft
+board page. Hit this for real: "James Cook III" / "Kenneth Walker III" had no Sleeper ADP match
+(suffixed-name mismatch in `transform.resolve_adp`'s exact-name join) so `adp`/`adp_value` were
+NaN. Fixed by casting to `object` dtype before the `None` substitution; added
+[tests/test_draft.py](tests/test_draft.py) asserting the serialized board never contains a bare
+`NaN` token. 33/33 tests pass.
+
+Verified visually in-browser (`docs-static` preview server): board renders, sorts, filters
+correctly with the real data.
+
+**Known gaps for next session:**
+1. `transform.resolve_adp`'s exact-name match misses suffixed names (`James Cook III` vs however
+   Sleeper spells it) — a handful of players show blank ADP. Low priority (renders fine now that
+   it's `null`, just incomplete); a fuzzy-match fallback like `crosswalk.py`'s would fix it.
+2. `crosswalk.heal` can't resolve anything locally without `nfl_data_py` (not installed — see
+   below); harmless pre-draft (crosswalk_coverage only WARNs on rostered players, and there are
+   none yet), but will matter once the league drafts and `fetch_nfl` needs to join by `gsis_id`.
+3. Bye weeks are all blank locally — needs `fetch_nfl`'s schedule import, same `nfl_data_py`
+   blocker.
+4. Local full-mode pipeline still needs a 3.11/3.12 venv for `nfl_data_py` (numpy has no cp314
+   wheel here); not a CI problem (workflows pin 3.11).
+5. Draft date still unknown beyond "likely later in August" — ask again closer to the time.
+6. Roster slots beyond §13 defaults deliberately left unconfirmed per user ("assume standard for
+   now, we will check when the league is set up again") — note league.settings already gave us
+   the *real* counts (bench 5, IR 2) despite that, so this is largely resolved; only worth
+   double-checking if the league's settings change before the draft.
+
+---
+
 ## 2026-07-30 — Live league settings pulled from ESPN; scoring CORRECTED (committed 2026-08-03)
 
 Configured the real league and pulled settings live from `league.settings` (the authoritative
