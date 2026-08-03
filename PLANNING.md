@@ -4,7 +4,38 @@ Running build log — update every session. Newest entry on top.
 
 ---
 
-## 2026-07-30 — League settings confirmed: 12 teams, full PPR, 6-pt pass TD
+## 2026-07-30 — Live league settings pulled from ESPN; scoring CORRECTED (committed 2026-08-03)
+
+Configured the real league and pulled settings live from `league.settings` (the authoritative
+source), which **corrects the entry below**:
+- `LEAGUE_ID = 1152031` set (+ ESPN creds configured locally, gitignored).
+- **Scoring is half-PPR (`rec: 0.5`), 4-pt passing TD** — NOT the full-PPR/6-pt entered verbally
+  below. league.settings wins over a verbal guess (data-over-assumption). `config.py` snapshotted
+  first (2 snapshots in `config_history/`).
+- Roster corrected off the §13 defaults: BENCH 7→5, IR 1→2. Added confirmed facts for Phase 3:
+  `REG_SEASON_WEEKS=14`, `PLAYOFF_TEAM_COUNT=7`, `PLAYOFF_MATCHUP_WEEKS=1`, `WAIVER_TYPE=priority`,
+  `TRADE_DEADLINE=2026-12-04`.
+- `fetch_espn.py`: added the **full player pool** (`league.free_agents(size=700)`) as a second
+  source alongside rosters — `team.roster` is empty pre-draft, so the pool is the draft board's
+  only real data source before draft day. Refactored the player/projection upsert into
+  `_player_rows`/`_upsert_players`; added `POSITION_MAP` (D/ST→DST) so positions match
+  `ROSTER_SLOTS`. `current_week()` unchanged — still ESPN-derived (§7.1 guardrail respected).
+- `tests/test_smoke.py`: hardened the creds-fallback test to force the ImportError via monkeypatch
+  rather than depending on the file being absent.
+
+Verified: `pytest` 32/32.
+
+**Next (now unblocked by having creds + LEAGUE_ID):**
+1. **Verify `evaluate.py` STAT_MAP against a live ESPN payload** — flagged as an unverified guess;
+   now that creds exist, inspect real `projected_breakdown` abbrevs and correct before trusting the
+   board's point totals. Highest priority — gates draft-board accuracy.
+2. First real pipeline run against the configured league to populate `docs/data/*.json`.
+3. Sanity-check the Sleeper ADP `search_rank` proxy vs real ADP.
+4. Local full-mode still needs a 3.11/3.12 venv (numpy/cp314 wheel issue).
+
+---
+
+## 2026-07-30 — League settings confirmed: 12 teams, full PPR, 6-pt pass TD  ⚠️ SUPERSEDED (see above — scoring was actually half-PPR/4-pt, per live league.settings)
 
 Answered part of the §12 open-questions backlog. Updated `config.py` (snapshotted first, per
 [CLAUDE.md](CLAUDE.md)) and `DESIGN.md` §12/§13:

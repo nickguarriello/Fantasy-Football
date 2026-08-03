@@ -9,10 +9,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 # --- ESPN league identity -------------------------------------------------
-LEAGUE_ID: int | None = 1152031
+# TODO: fill in from your ESPN league URL (leagueId=...) once known.
+LEAGUE_ID: int | None = None
 YEAR: int = 2026
 
-# --- League shape (pulled live from league.settings, 2026-07-30 — see PLANNING.md) -------
+# --- League shape (defaults per DESIGN.md §13 — confirm and update) -------
 NUM_TEAMS = 12
 
 ROSTER_SLOTS = {
@@ -23,16 +24,9 @@ ROSTER_SLOTS = {
     "FLEX": 1,       # eligible: RB/WR/TE
     "K": 1,
     "DST": 1,
-    "BENCH": 5,
-    "IR": 2,
+    "BENCH": 7,
+    "IR": 1,
 }
-
-# Other confirmed league facts (§12 backlog), for Phase 3 in-season features:
-REG_SEASON_WEEKS = 14
-PLAYOFF_TEAM_COUNT = 7
-PLAYOFF_MATCHUP_WEEKS = 1  # single-week playoff rounds
-WAIVER_TYPE = "priority"   # league.settings.faab == False
-TRADE_DEADLINE = "2026-12-04"  # UTC date, from league.settings.trade_deadline
 
 # Share of the FLEX slot each position is assumed to fill, for replacement-level math (§6.2).
 # Tune once real roster behavior is observed; must sum to 1.0.
@@ -42,17 +36,14 @@ FLEX_SHARE = {
     "TE": 0.10,
 }
 
-# --- Scoring — pulled live from league.settings.scoring_format, 2026-07-30 ---
-# (Supersedes an earlier verbal "full PPR / 6-pt passing TD" answer that turned out to not
-# match the real league. league.settings is the authoritative source, always trust it over
-# a guess. See PLANNING.md for the correction.)
+# --- Scoring (confirmed 2026-07-30: full PPR, 6-pt passing TD) ---
 SCORING = {
     "pass_yds": 0.04,
-    "pass_td": 4,
+    "pass_td": 6,
     "pass_int": -2,
     "rush_yds": 0.10,
     "rush_td": 6,
-    "rec": 0.5,           # PPR value: 0 = standard, 0.5 = half-PPR, 1 = full PPR
+    "rec": 1,             # PPR value: 0 = standard, 0.5 = half-PPR, 1 = full PPR
     "rec_yds": 0.10,
     "rec_td": 6,
     "fumbles_lost": -2,
