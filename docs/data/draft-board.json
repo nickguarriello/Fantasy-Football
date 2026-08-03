@@ -13,6 +13,17 @@
     "fumbles_lost": -2,
     "two_pt": 2
   },
+  "roster_slots": {
+    "QB": 1,
+    "RB": 2,
+    "WR": 2,
+    "TE": 1,
+    "FLEX": 1,
+    "K": 1,
+    "DST": 1,
+    "BENCH": 5,
+    "IR": 2
+  },
   "scarcity": {
     "DST": 0.0,
     "K": 0.0,
@@ -227,8 +238,8 @@
       "vbd": 33.79,
       "vbd_rank": 16.0,
       "tier": 2,
-      "adp": null,
-      "adp_value": null
+      "adp": 5.0,
+      "adp_value": -11.0
     },
     {
       "player_id": 4362238,
@@ -279,8 +290,8 @@
       "vbd": 29.68,
       "vbd_rank": 20.0,
       "tier": 2,
-      "adp": null,
-      "adp_value": null
+      "adp": 19.0,
+      "adp_value": -1.0
     },
     {
       "player_id": 4427366,
@@ -617,8 +628,8 @@
       "vbd": 11.51,
       "vbd_rank": 46.0,
       "tier": 5,
-      "adp": null,
-      "adp_value": null
+      "adp": 30.0,
+      "adp_value": -16.0
     },
     {
       "player_id": 4430027,
@@ -890,8 +901,8 @@
       "vbd": 4.31,
       "vbd_rank": 67.0,
       "tier": 2,
-      "adp": 1059.0,
-      "adp_value": 992.0
+      "adp": 12.0,
+      "adp_value": -55.0
     },
     {
       "player_id": 15847,
@@ -942,8 +953,8 @@
       "vbd": 2.78,
       "vbd_rank": 71.0,
       "tier": 4,
-      "adp": null,
-      "adp_value": null
+      "adp": 63.0,
+      "adp_value": -8.0
     },
     {
       "player_id": 4697815,
@@ -1020,8 +1031,8 @@
       "vbd": 0.22,
       "vbd_rank": 77.0,
       "tier": 5,
-      "adp": null,
-      "adp_value": null
+      "adp": 71.0,
+      "adp_value": -6.0
     },
     {
       "player_id": 4426388,
@@ -1046,8 +1057,8 @@
       "vbd": 0.18,
       "vbd_rank": 78.0,
       "tier": 8,
-      "adp": null,
-      "adp_value": null
+      "adp": 40.0,
+      "adp_value": -38.0
     },
     {
       "player_id": 4568263,
@@ -2385,8 +2396,8 @@
       "vbd": -3.89,
       "vbd_rank": 182.0,
       "tier": 8,
-      "adp": null,
-      "adp_value": null
+      "adp": 98.0,
+      "adp_value": -84.0
     },
     {
       "player_id": 3042519,
@@ -2398,8 +2409,8 @@
       "vbd": -4.28,
       "vbd_rank": 183.0,
       "tier": 6,
-      "adp": null,
-      "adp_value": null
+      "adp": 85.0,
+      "adp_value": -98.0
     },
     {
       "player_id": 4036133,
@@ -2437,8 +2448,8 @@
       "vbd": -5.65,
       "vbd_rank": 186.0,
       "tier": 9,
-      "adp": null,
-      "adp_value": null
+      "adp": 76.0,
+      "adp_value": -110.0
     },
     {
       "player_id": 16737,
@@ -2658,8 +2669,8 @@
       "vbd": -10.66,
       "vbd_rank": 203.0,
       "tier": 10,
-      "adp": null,
-      "adp_value": null
+      "adp": 66.0,
+      "adp_value": -137.0
     },
     {
       "player_id": 4429025,
@@ -2814,8 +2825,8 @@
       "vbd": -13.95,
       "vbd_rank": 215.0,
       "tier": 11,
-      "adp": null,
-      "adp_value": null
+      "adp": 88.0,
+      "adp_value": -127.0
     },
     {
       "player_id": 3116164,
@@ -3334,8 +3345,8 @@
       "vbd": -32.03,
       "vbd_rank": 255.0,
       "tier": 17,
-      "adp": 615.0,
-      "adp_value": 360.0
+      "adp": 156.0,
+      "adp_value": -99.0
     },
     {
       "player_id": 4430034,
@@ -3490,8 +3501,8 @@
       "vbd": -36.06,
       "vbd_rank": 267.0,
       "tier": 14,
-      "adp": null,
-      "adp_value": null
+      "adp": 80.0,
+      "adp_value": -187.0
     },
     {
       "player_id": 4723820,
@@ -3503,8 +3514,8 @@
       "vbd": -36.46,
       "vbd_rank": 268.0,
       "tier": 19,
-      "adp": null,
-      "adp_value": null
+      "adp": 146.0,
+      "adp_value": -122.0
     },
     {
       "player_id": 4366031,
@@ -3698,8 +3709,8 @@
       "vbd": -41.59,
       "vbd_rank": 283.0,
       "tier": 15,
-      "adp": null,
-      "adp_value": null
+      "adp": 141.0,
+      "adp_value": -142.0
     },
     {
       "player_id": 4258595,
@@ -3841,8 +3852,8 @@
       "vbd": -43.82,
       "vbd_rank": 294.0,
       "tier": 15,
-      "adp": null,
-      "adp_value": null
+      "adp": 110.0,
+      "adp_value": -184.0
     },
     {
       "player_id": 4249417,
@@ -3906,8 +3917,8 @@
       "vbd": -46.11,
       "vbd_rank": 299.0,
       "tier": 16,
-      "adp": null,
-      "adp_value": null
+      "adp": 139.0,
+      "adp_value": -160.0
     },
     {
       "player_id": 4596334,
@@ -3997,8 +4008,8 @@
       "vbd": -47.14,
       "vbd_rank": 306.0,
       "tier": 15,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 693.0
     },
     {
       "player_id": 4603186,
@@ -4205,8 +4216,8 @@
       "vbd": -49.43,
       "vbd_rank": 322.0,
       "tier": 17,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 677.0
     },
     {
       "player_id": 4048228,
@@ -4231,8 +4242,8 @@
       "vbd": -49.51,
       "vbd_rank": 324.0,
       "tier": 21,
-      "adp": null,
-      "adp_value": null
+      "adp": 196.0,
+      "adp_value": -128.0
     },
     {
       "player_id": 4880236,
@@ -4257,8 +4268,8 @@
       "vbd": -49.66,
       "vbd_rank": 326.0,
       "tier": 17,
-      "adp": 999.0,
-      "adp_value": 673.0
+      "adp": null,
+      "adp_value": null
     },
     {
       "player_id": 4683243,
@@ -4335,8 +4346,8 @@
       "vbd": -50.39,
       "vbd_rank": 332.0,
       "tier": 22,
-      "adp": null,
-      "adp_value": null
+      "adp": 192.0,
+      "adp_value": -140.0
     },
     {
       "player_id": 4259147,
@@ -4842,8 +4853,8 @@
       "vbd": -56.3,
       "vbd_rank": 371.0,
       "tier": 17,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 628.0
     },
     {
       "player_id": 4686248,
@@ -4920,8 +4931,8 @@
       "vbd": -57.72,
       "vbd_rank": 377.0,
       "tier": 17,
-      "adp": 999.0,
-      "adp_value": 622.0
+      "adp": null,
+      "adp_value": null
     },
     {
       "player_id": 4565859,
@@ -5076,8 +5087,8 @@
       "vbd": -59.59,
       "vbd_rank": 389.0,
       "tier": 25,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 610.0
     },
     {
       "player_id": 4833029,
@@ -5453,8 +5464,8 @@
       "vbd": -61.31,
       "vbd_rank": 418.0,
       "tier": 17,
-      "adp": 999.0,
-      "adp_value": 581.0
+      "adp": null,
+      "adp_value": null
     },
     {
       "player_id": 4686468,
@@ -5518,8 +5529,8 @@
       "vbd": -62.43,
       "vbd_rank": 423.0,
       "tier": 26,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 576.0
     },
     {
       "player_id": 4682648,
@@ -5570,8 +5581,8 @@
       "vbd": -63.4,
       "vbd_rank": 427.0,
       "tier": 17,
-      "adp": 999.0,
-      "adp_value": 572.0
+      "adp": null,
+      "adp_value": null
     },
     {
       "player_id": 4241961,
@@ -5583,8 +5594,8 @@
       "vbd": -63.47,
       "vbd_rank": 428.0,
       "tier": 17,
-      "adp": 999.0,
-      "adp_value": 571.0
+      "adp": null,
+      "adp_value": null
     },
     {
       "player_id": 4686422,
@@ -5609,8 +5620,8 @@
       "vbd": -63.58,
       "vbd_rank": 430.0,
       "tier": 17,
-      "adp": 9999999.0,
-      "adp_value": 9999569.0
+      "adp": null,
+      "adp_value": null
     },
     {
       "player_id": 2515270,
@@ -5622,8 +5633,8 @@
       "vbd": -63.59,
       "vbd_rank": 431.0,
       "tier": 17,
-      "adp": 999.0,
-      "adp_value": 568.0
+      "adp": null,
+      "adp_value": null
     },
     {
       "player_id": 3125107,
@@ -5895,8 +5906,8 @@
       "vbd": -63.96,
       "vbd_rank": 434.0,
       "tier": 20,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 565.0
     },
     {
       "player_id": 9614,
@@ -5921,8 +5932,8 @@
       "vbd": -64.16,
       "vbd_rank": 454.0,
       "tier": 17,
-      "adp": 9999999.0,
-      "adp_value": 9999545.0
+      "adp": null,
+      "adp_value": null
     },
     {
       "player_id": 4039505,
@@ -5960,8 +5971,8 @@
       "vbd": -64.45,
       "vbd_rank": 457.0,
       "tier": 17,
-      "adp": 999.0,
-      "adp_value": 542.0
+      "adp": null,
+      "adp_value": null
     },
     {
       "player_id": 2991662,
@@ -5986,8 +5997,8 @@
       "vbd": -64.89,
       "vbd_rank": 459.0,
       "tier": 26,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 540.0
     },
     {
       "player_id": 4430870,
@@ -6129,8 +6140,8 @@
       "vbd": -67.38,
       "vbd_rank": 470.0,
       "tier": 17,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 529.0
     },
     {
       "player_id": 4569682,
@@ -6428,8 +6439,8 @@
       "vbd": -67.38,
       "vbd_rank": 470.0,
       "tier": 17,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 529.0
     },
     {
       "player_id": 4372019,
@@ -6454,8 +6465,8 @@
       "vbd": -67.38,
       "vbd_rank": 470.0,
       "tier": 17,
-      "adp": 9999999.0,
-      "adp_value": 9999529.0
+      "adp": 999.0,
+      "adp_value": 529.0
     },
     {
       "player_id": 4257364,
@@ -6493,8 +6504,8 @@
       "vbd": -67.38,
       "vbd_rank": 470.0,
       "tier": 17,
-      "adp": 9999999.0,
-      "adp_value": 9999529.0
+      "adp": 169.0,
+      "adp_value": -301.0
     },
     {
       "player_id": 4372561,
@@ -6610,8 +6621,8 @@
       "vbd": -67.38,
       "vbd_rank": 470.0,
       "tier": 17,
-      "adp": 9999999.0,
-      "adp_value": 9999529.0
+      "adp": 999.0,
+      "adp_value": 529.0
     },
     {
       "player_id": 4429275,
@@ -6675,8 +6686,8 @@
       "vbd": -67.38,
       "vbd_rank": 470.0,
       "tier": 17,
-      "adp": 592.0,
-      "adp_value": 122.0
+      "adp": null,
+      "adp_value": null
     },
     {
       "player_id": 4427600,
@@ -6883,8 +6894,8 @@
       "vbd": -67.38,
       "vbd_rank": 470.0,
       "tier": 17,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 529.0
     },
     {
       "player_id": 4045163,
@@ -6935,8 +6946,8 @@
       "vbd": -67.38,
       "vbd_rank": 470.0,
       "tier": 17,
-      "adp": null,
-      "adp_value": null
+      "adp": 187.0,
+      "adp_value": -283.0
     },
     {
       "player_id": 4240021,
@@ -7000,8 +7011,8 @@
       "vbd": -67.88,
       "vbd_rank": 537.0,
       "tier": 27,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 462.0
     },
     {
       "player_id": 4243389,
@@ -7013,8 +7024,8 @@
       "vbd": -68.75,
       "vbd_rank": 538.0,
       "tier": 28,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 461.0
     },
     {
       "player_id": 4037235,
@@ -7182,8 +7193,8 @@
       "vbd": -71.82,
       "vbd_rank": 551.0,
       "tier": 29,
-      "adp": 9999999.0,
-      "adp_value": 9999448.0
+      "adp": 999.0,
+      "adp_value": 448.0
     },
     {
       "player_id": 4565185,
@@ -7338,8 +7349,8 @@
       "vbd": -72.88,
       "vbd_rank": 563.0,
       "tier": 10,
-      "adp": null,
-      "adp_value": null
+      "adp": 199.0,
+      "adp_value": -364.0
     },
     {
       "player_id": 5081338,
@@ -7403,8 +7414,8 @@
       "vbd": -75.38,
       "vbd_rank": 568.0,
       "tier": 32,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 431.0
     },
     {
       "player_id": 16731,
@@ -7455,8 +7466,8 @@
       "vbd": -75.38,
       "vbd_rank": 568.0,
       "tier": 32,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 431.0
     },
     {
       "player_id": 2577327,
@@ -7520,8 +7531,8 @@
       "vbd": -75.38,
       "vbd_rank": 568.0,
       "tier": 32,
-      "adp": 9999999.0,
-      "adp_value": 9999431.0
+      "adp": 999.0,
+      "adp_value": 431.0
     },
     {
       "player_id": 4241983,
@@ -7559,8 +7570,8 @@
       "vbd": -75.38,
       "vbd_rank": 568.0,
       "tier": 32,
-      "adp": null,
-      "adp_value": null
+      "adp": 231.0,
+      "adp_value": -337.0
     },
     {
       "player_id": 4877203,
@@ -7650,8 +7661,8 @@
       "vbd": -75.38,
       "vbd_rank": 568.0,
       "tier": 32,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 431.0
     },
     {
       "player_id": 3930066,
@@ -7871,8 +7882,8 @@
       "vbd": -75.38,
       "vbd_rank": 568.0,
       "tier": 32,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 431.0
     },
     {
       "player_id": 4428209,
@@ -7923,8 +7934,8 @@
       "vbd": -75.38,
       "vbd_rank": 568.0,
       "tier": 32,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 431.0
     },
     {
       "player_id": 4035004,
@@ -7936,8 +7947,8 @@
       "vbd": -75.38,
       "vbd_rank": 568.0,
       "tier": 32,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 431.0
     },
     {
       "player_id": 4424106,
@@ -7975,8 +7986,8 @@
       "vbd": -75.38,
       "vbd_rank": 568.0,
       "tier": 32,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 431.0
     },
     {
       "player_id": 4036335,
@@ -7988,8 +7999,8 @@
       "vbd": -75.38,
       "vbd_rank": 568.0,
       "tier": 32,
-      "adp": null,
-      "adp_value": null
+      "adp": 9999999.0,
+      "adp_value": 9999431.0
     },
     {
       "player_id": 4372716,
@@ -8703,8 +8714,8 @@
       "vbd": -106.86,
       "vbd_rank": 668.0,
       "tier": 13,
-      "adp": null,
-      "adp_value": null
+      "adp": 999.0,
+      "adp_value": 331.0
     },
     {
       "player_id": 4889929,
@@ -8781,8 +8792,8 @@
       "vbd": -108.5,
       "vbd_rank": 670.0,
       "tier": 13,
-      "adp": 9999999.0,
-      "adp_value": 9999329.0
+      "adp": 999.0,
+      "adp_value": 329.0
     },
     {
       "player_id": 4036419,
@@ -8833,8 +8844,8 @@
       "vbd": -108.5,
       "vbd_rank": 670.0,
       "tier": 13,
-      "adp": null,
-      "adp_value": null
+      "adp": 9999999.0,
+      "adp_value": 9999329.0
     },
     {
       "player_id": 4567747,
@@ -8885,8 +8896,8 @@
       "vbd": -108.5,
       "vbd_rank": 670.0,
       "tier": 13,
-      "adp": null,
-      "adp_value": null
+      "adp": 410.0,
+      "adp_value": -260.0
     },
     {
       "player_id": 4431325,
@@ -9041,8 +9052,8 @@
       "vbd": -108.5,
       "vbd_rank": 670.0,
       "tier": 13,
-      "adp": null,
-      "adp_value": null
+      "adp": 254.0,
+      "adp_value": -416.0
     },
     {
       "player_id": 2573079,

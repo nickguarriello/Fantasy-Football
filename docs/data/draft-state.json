@@ -1,0 +1,56 @@
+{
+  "generated_at": "2026-08-03T20:22:55.950289+00:00",
+  "season": 2026,
+  "drafted": false,
+  "teams": [
+    {
+      "team_id": 5,
+      "team_name": "Black Dog Tailwaggers"
+    },
+    {
+      "team_id": 10,
+      "team_name": "Fricken Flea Flicker"
+    },
+    {
+      "team_id": 11,
+      "team_name": "Give Me The Ball"
+    },
+    {
+      "team_id": 3,
+      "team_name": "Grits 'n' Gravey "
+    },
+    {
+      "team_id": 8,
+      "team_name": "Lambeau Leapers"
+    },
+    {
+      "team_id": 7,
+      "team_name": "MT Good Medicine "
+    },
+    {
+      "team_id": 9,
+      "team_name": "Montana  Thunder"
+    },
+    {
+      "team_id": 1,
+      "team_name": "Ol' Dirty  Bastard"
+    },
+    {
+      "team_id": 4,
+      "team_name": "Sal's Walter Harolds "
+    },
+    {
+      "team_id": 13,
+      "team_name": "Sweatin n Bettin"
+    },
+    {
+      "team_id": 2,
+      "team_name": "Team Bigmamma"
+    },
+    {
+      "team_id": 12,
+      "team_name": "The Jess Express"
+    }
+  ],
+  "picks": []
+}
