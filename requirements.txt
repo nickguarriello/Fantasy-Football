@@ -1,5 +1,5 @@
 espn_api>=0.44.1
 nfl-data-py>=0.3.3
 requests>=2.31
-pandas>=2.2
+pandas<2.0,>=1.5
 rapidfuzz>=3.9
