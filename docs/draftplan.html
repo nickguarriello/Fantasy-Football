@@ -1,0 +1,156 @@
+<meta charset="utf-8" />
+<title>Draft Plan by Slot — Fantasy Football</title>
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  main.plan { max-width: 1100px; }
+  .plan h1 { margin: 0 0 2px; }
+  .plan .sub { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+  .slotpick { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .slotpick select { font-size: 15px; padding: 6px 10px; }
+  .lead { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 18px; font-size: 13.5px; line-height: 1.6; }
+  .lead b { color: var(--text); }
+  .pick { margin-bottom: 16px; break-inside: avoid; }
+  .pick h3 {
+    margin: 0 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 3px;
+  }
+  .pick .hint { color: var(--muted); font-size: 12px; margin: 0 0 5px; }
+  .plist { font-size: 12.5px; line-height: 1.5; }
+  .plist .row { display: flex; gap: 8px; white-space: nowrap; }
+  .plist .row .rk { width: 26px; color: var(--muted); text-align: right; }
+  .plist .row .nm { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; }
+  .plist .row .tg { width: 34px; color: var(--muted); }
+  .plist .row .ti { width: 34px; }
+  .plist .row .by { width: 30px; color: var(--muted); text-align: right; }
+  .plist .row .ad { width: 40px; text-align: right; }
+  .plist .row.value .ad { color: var(--good); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+  @media print {
+    @page { size: portrait; margin: 0.4in; }
+    header.topnav, .banner, .noprint { display: none !important; }
+    body { background: #fff; color: #000; font-size: 10px; }
+    main.plan { padding: 0; max-width: none; }
+    .pick h3, .lead b { color: #000; }
+    .plist .row.value .ad { color: #000; font-weight: 700; }
+    .lead, .pick h3, .plist { border-color: #000; }
+  }
+</style>
+<main class="plan">
+  <h1>Draft Plan by Slot</h1>
+  <div class="sub" id="sub">Loading…</div>
+
+  <div class="slotpick noprint">
+    <label><b>My draft slot</b>
+      <select id="slot"></select>
+    </label>
+    <span class="sub" id="picknums"></span>
+    <button class="noprint" onclick="window.print()" style="margin-left:auto">Print</button>
+  </div>
+
+  <div class="lead" id="lead"></div>
+  <div class="cols" id="picks"></div>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+  const TEAMS = 12;
+  const ROUNDS = 15;
+
+  // Snake pick numbers for a given 1-indexed slot.
+  function pickNumbers(slot) {
+    const out = [];
+    for (let r = 1; r <= ROUNDS; r++) {
+      out.push(r % 2 === 1 ? (r - 1) * TEAMS + slot : r * TEAMS - slot + 1);
+    }
+    return out;
+  }
+
+  const STARTERS = { QB: 1, RB: 2, WR: 2, TE: 1, FLEX: 1, K: 1, DST: 1 };
+
+  let board = null, meta = null;
+
+  const row = (p, isValue) => `
+    <div class="row${isValue ? " value" : ""}">
+      <span class="rk">${p.vbd_rank ?? ""}</span>
+      <span class="nm">${p.name}</span>
+      <span class="tg pos-${p.position}">${p.position}</span>
+      <span class="ti">${p.tier != null ? "T" + p.tier : ""}</span>
+      <span class="by">${p.bye_week ? "b" + p.bye_week : ""}</span>
+      <span class="ad">${p.adp ?? "—"}</span>
+    </div>`;
+
+  function leadText(slot, picks) {
+    const P = board.players;
+    const atPick = (n) => P.filter((p) => p.adp != null && Math.abs(p.adp - n) <= 6)
+      .sort((a, b) => a.adp - b.adp);
+    const r1 = picks[0], r2 = picks[1], r3 = picks[2];
+    const r1pool = P.filter((p) => p.adp != null && p.adp >= r1 - 3 && p.adp <= r1 + 6)
+      .sort((a, b) => a.adp - b.adp).slice(0, 6).map((p) => `${p.name} (${p.position}${p.tier != null ? " T" + p.tier : ""})`);
+    const gap12 = r2 - r1, gap23 = r3 - r2;
+    const nearTurn = Math.min(gap12, gap23) <= 3;
+    const turnText = nearTurn
+      ? `You pick <b>back-to-back at the turn</b> (${gap12 <= gap23 ? `R1→R2, ${gap12} apart` : `R2→R3, ${gap23} apart`}), then wait ~2 full rounds. Draft in <b>pairs</b> — take two you like in that window; don't count on a specific guy surviving the long gap.`
+      : `Steady cadence — ~${gap12} picks between selections, no wheel to exploit. Just take the best value on the board each time.`;
+    const rbTop = P.filter((p) => p.position === "RB").sort((a, b) => b.vbd - a.vbd);
+    const rbGoneByR2 = rbTop.filter((p) => p.adp != null && p.adp < r2).length;
+    return `
+      <b>Slot ${slot} · picks ${picks.slice(0, 6).join(", ")} …</b><br />
+      <b>Round 1 (pick ${r1}):</b> realistic board — ${r1pool.join(" · ")}.<br />
+      <b>Cadence:</b> ${turnText}<br />
+      <b>RB math:</b> ~${rbGoneByR2} of the top RBs are typically gone by your R2 pick (${r2}). RB value
+      drops faster than WR (scarcity ${board.scarcity?.RB ?? "?"} vs ${board.scarcity?.WR ?? "?"}) —
+      leave the first 2–3 rounds with at least one, ideally two, unless an elite WR tier is about to empty in front of you.<br />
+      <b>Everywhere:</b> draft the last man in a tier before it breaks · don't reach QB/K/DST (1 slot, streamable) ·
+      avoid 3+ starters sharing a bye week.`;
+  }
+
+  function render() {
+    const slot = Number(document.getElementById("slot").value);
+    const picks = pickNumbers(slot);
+    document.getElementById("picknums").textContent = "Your picks: " + picks.join(", ");
+    document.getElementById("lead").innerHTML = leadText(slot, picks);
+
+    const P = board.players.filter((p) => p.adp != null);
+    const byAdp = [...P].sort((a, b) => a.adp - b.adp);
+
+    document.getElementById("picks").innerHTML = picks.map((n, i) => {
+      // "In range" = from a small variance buffer before your pick to ~2 rounds after.
+      // ADP < n - 5 is realistically already gone, so don't list it.
+      const pool = byAdp.filter((p) => p.adp >= n - 5 && p.adp <= n + 26).slice(0, 16);
+      const posCount = {};
+      pool.forEach((p) => (posCount[p.position] = (posCount[p.position] || 0) + 1));
+      const lean = Object.entries(posCount).filter(([k]) => ["RB", "WR", "TE"].includes(k))
+        .sort((a, b) => b[1] - a[1]);
+      // "Best value" = biggest (ADP - model rank) gap, skill positions only (QB/K/DST VBD misleads).
+      const bestValue = [...pool].filter((p) => ["RB", "WR", "TE"].includes(p.position))
+        .sort((a, b) => (b.adp - b.vbd_rank) - (a.adp - a.vbd_rank))[0];
+      const hint = pool.length
+        ? `In range: ${lean.map(([k, v]) => `${v} ${k}`).join(" · ")}. ` +
+          `Best value here: ${bestValue ? `${bestValue.name} (ADP ${bestValue.adp}, model #${bestValue.vbd_rank})` : "—"}.`
+        : "Deep — take best available / handcuffs / upside.";
+      return `
+        <div class="pick">
+          <h3>Round ${i + 1} — pick ${n}</h3>
+          <p class="hint">${hint}</p>
+          <div class="plist">${pool.map((p) => row(p, p.adp >= n + 10)).join("")}</div>
+        </div>`;
+    }).join("");
+  }
+
+  Promise.all([
+    fetch("data/draft-board.json", { cache: "no-store" }).then((r) => r.json()),
+    fetch("data/meta.json", { cache: "no-store" }).then((r) => r.json()).catch(() => ({})),
+  ]).then(([b, m]) => {
+    board = b; meta = m;
+    const age = m.generated_at ? new Date(m.generated_at).toLocaleString() : "unknown";
+    document.getElementById("sub").innerHTML =
+      `${b.num_teams}-team snake · half-PPR · board data as of <b>${age}</b>. ` +
+      `Pick your slot when you get it (~1h before). Green ADP = value still on the board at that pick.`;
+    const sel = document.getElementById("slot");
+    for (let s = 1; s <= TEAMS; s++) sel.add(new Option(`${s}`, `${s}`));
+    sel.value = "6";
+    sel.addEventListener("change", render);
+    render();
+  }).catch((err) => {
+    document.getElementById("sub").textContent = `Couldn't load draft-board.json — run the pipeline. (${err.message})`;
+  });
+</script>

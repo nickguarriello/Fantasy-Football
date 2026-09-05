@@ -2,6 +2,7 @@ const PAGES = [
   ["index.html", "Home"],
   ["draft.html", "Draft Board"],
   ["cheatsheet.html", "Cheat Sheet"],
+  ["draftplan.html", "Draft Plan"],
   ["assistant.html", "Draft Assistant"],
   ["startsit.html", "Start/Sit"],
   ["waivers.html", "Waivers"],
