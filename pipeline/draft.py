@@ -37,6 +37,13 @@ def bye_clusters(roster_view: pd.DataFrame, threshold: int = 3) -> list[dict]:
     ]
 
 
+# adp_value (ADP minus VBD rank) is only meaningful where many players start at the position.
+# For 1-slot, stream-friendly positions VBD massively overrates the top of the pool, so the
+# "value" number is a mirage (Josh Allen: VBD rank 4, real ADP ~31 -> a fake +27). Blank it for
+# these so the board/cheat-sheet don't invite a reach; draft these off ADP + tier instead.
+ADP_VALUE_SUPPRESSED_POS = {"QB", "K", "DST"}
+
+
 def build_board(evaluated_view: pd.DataFrame) -> dict:
     """evaluated_view = output of evaluate.evaluate(). Returns the draft-board.json payload."""
     cols = [
@@ -48,6 +55,8 @@ def build_board(evaluated_view: pd.DataFrame) -> dict:
     # to NaN, which json.dump then writes as the bare (invalid-JSON) token `NaN` — breaks
     # JSON.parse in the browser. object dtype lets None actually stick, serializing as `null`.
     players = players.astype(object).where(players.notna(), None)
+    if "adp_value" in players.columns:
+        players.loc[players["position"].isin(ADP_VALUE_SUPPRESSED_POS), "adp_value"] = None
     return {
         "season": config.YEAR,
         "num_teams": config.NUM_TEAMS,

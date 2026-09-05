@@ -34,3 +34,28 @@ def test_build_board_serializes_missing_values_as_json_null_not_nan():
     assert missing["adp"] is None
     assert missing["adp_value"] is None
     assert missing["bye_week"] is None
+
+
+def test_build_board_blanks_adp_value_for_one_slot_positions():
+    """QB/K/DST adp_value is a mirage (VBD overrates 1-slot pools) — build_board nulls it so the
+    board can't invite a reach. Skill-position adp_value is left intact."""
+    view = pd.DataFrame(
+        {
+            "player_id": [1, 2, 3, 4],
+            "name": ["Elite QB", "A Kicker", "A Defense", "A Back"],
+            "position": ["QB", "K", "DST", "RB"],
+            "pro_team": ["BUF", "DAL", "PIT", "ATL"],
+            "bye_week": [7, 7, 9, 5],
+            "projected_points": [380.0, 140.0, 120.0, 240.0],
+            "vbd": [90.0, 0.0, 0.0, 55.0],
+            "vbd_rank": [4.0, 300.0, 300.0, 6.0],
+            "tier": [1, 1, 1, 2],
+            "adp": [31.0, 130.0, 150.0, 12.0],
+            "adp_value": [27.0, -170.0, -150.0, 6.0],
+        }
+    )
+    by_id = {p["player_id"]: p for p in draft.build_board(view)["players"]}
+    assert by_id[1]["adp_value"] is None   # QB
+    assert by_id[2]["adp_value"] is None   # K
+    assert by_id[3]["adp_value"] is None   # DST
+    assert by_id[4]["adp_value"] == 6.0    # RB untouched
