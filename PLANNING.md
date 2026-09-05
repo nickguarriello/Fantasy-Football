@@ -4,6 +4,69 @@ Running build log — update every session. Newest entry on top.
 
 ---
 
+## 2026-09-05 — Draft-day prep: real ADP, LAR/WSH byes, tier algo rewrite
+
+Draft is **Monday 2026-09-07** (Labor Day, right before Week 1). Draft order not known yet
+(user will get it later). Session was
+"game plan and organize" — found the scheduled pipeline healthy (last real run Wed 09-02, green)
+but three data-quality problems on the board, all now fixed. Local checkout was 8 data-commits
+behind origin/main — fast-forwarded (no local commits).
+
+**1. Real ADP** (`pipeline/fetch_projections.py`, `pipeline/transform.py`). The board's "ADP" was
+Sleeper's `search_rank` (a search-popularity ordinal, not draft position) — position-ish scoped
+with collisions (Nacua/Allen/J.Taylor all showed `adp=4.0`) and one raw `9999999` sentinel
+leaking through, making the sleeper/reach column meaningless.
+- Added `fetch_ffc_adp()` — Fantasy Football Calculator public API (`/api/v1/adp/half-ppr?teams=12
+  &year=2026`), real mock-draft ADP from ~2,900 drafts, scoped to our exact format. 227 players
+  (incl. 19 DEF + 19 PK). Verified the endpoint live: HTTP 200, decimal ADP, sane ordering.
+- Sleeper demoted to a *fallback* for players FFC's ~200-deep board doesn't list; `search_rank
+  >= 9999999` now dropped.
+- `resolve_adp()` generalized to resolve every source in `ADP_SOURCES` into `fact_adp`
+  (`source` column already in the PK — no schema change). Staged rows now de-duped on
+  name+position before the merge so a duplicated external entry can't fan out onto multiple
+  players (that was the `adp=4.0` collision). `player_season_view()` coalesces sources in
+  priority order (FFC → Sleeper). `ADP_POSITION_MAP` now also maps FFC's `PK` → `K`.
+
+**2. LAR / WSH bye weeks** (`pipeline/fetch_nfl.py`). The Aug-03 known gap. nflverse spells the
+Rams/Commanders `LA`/`WAS`; ESPN (`dim_players.pro_team`) uses `LAR`/`WSH`, so the bye join
+silently missed every player on those two teams (Nacua, Kyren Williams, D. Adams, Stafford,
+McLaurin, Jayden Daniels, both D/STs). Added `NFLVERSE_TEAM_MAP` (LA→LAR, WAS→WSH, + legacy
+JAC/OAK/SD/STL) applied to team + opponent when writing `dim_schedule` **and** `fact_vegas`, so
+Phase 3 vegas joins are covered too. Can't verify locally (`nfl_data_py` still won't install on
+3.14) — LA/WAS are well-documented nflverse conventions; the CI run will confirm bye coverage.
+
+**3. Tier algorithm rewrite** (`pipeline/evaluate.py`, `config.py`). Old threshold was
+`0.75 × running-mean gap` — the huge VBD gaps between elite players inflated the mean so far
+that no later break ever fired: RB "Tier 1" was **15 players deep**, WR tiers were sparse/`None`.
+Rewrote to `max(TIER_GAP_MULTIPLIER × median adjacent gap over the position's top 40,
+TIER_MIN_GAP points)`. Median is outlier-robust. New knobs: `TIER_GAP_MULTIPLIER 0.75 → 3.0`,
+`TIER_MIN_GAP = 2.0` (config snapshotted first; also restored 2 `config_history/` snapshots that
+were deleted-but-uncommitted in the working tree). Simulated against the live board: RB now = 5
+solo elite tiers + a clean 10-man RB2 pack + Achane alone + mid tiers; WR = Nacua/Chase, ARSB,
+JSN, Lamb/JJ/Rice, …; TE = Bowers, McBride, then the 7-man positional-advantage group. Draft-usable.
+(Deep undrafted players still collapse into one trailing mega-tier — harmless, not worth capping.)
+
+**Tests:** 53 pass (was 42). New: `test_fetch_projections.py` (FFC stage/scoping, network
+non-fatal, Sleeper sentinel drop), transform ADP priority + de-dup + PK/DEF mapping,
+`test_fetch_nfl.py` nflverse→ESPN team translation, `test_evaluate.py` tier-no-washout regression.
+
+**Not yet done / next:**
+1. **Push + `workflow_dispatch`** to regenerate the board with all three fixes — not committed
+   yet, waiting on the user. After the run, eyeball `draft-board.json`: bye coverage for LAR/WSH,
+   `adp`/`adp_value` now spread and decimal, tier sizes.
+2. **Draft-day freshness**: cron is Tue/Wed only; next run (Tue 09-08) is *the day after* the
+   Monday 09-07 draft. Plan: manual `workflow_dispatch` Sun 09-06 + Mon 09-07 (~2h pre-draft).
+   Consider a temporary Sun/Mon cron entry.
+3. **Live-draft tracking = manual clicks** (decided). Assistant has no auto-refresh and
+   `draft-state.json` only updates on a pipeline run, so on Monday it's driven by the Mine/Other
+   buttons — one browser, one device, localStorage only. **User will run an ESPN mock draft**
+   this weekend to validate the assistant end-to-end (sync + best-available + run alerts).
+4. **Draft slot** — nothing in the code uses it; when the user gets it, build a pick-by-pick
+   snake plan (tiers × pick numbers, RB-lean early per scarcity 79.5 RB vs 53.4 WR, bye clusters).
+5. DST/K ADP now populated via FFC — check the sleeper/reach column looks sane for them post-run.
+
+---
+
 ## 2026-08-03 — Bye weeks fixed (were always blank — real bug, not a data gap)
 
 `fetch_nfl.fetch_schedule_and_vegas` wrote every `dim_schedule` row with `is_bye` hardcoded to
