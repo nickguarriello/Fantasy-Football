@@ -59,6 +59,22 @@ def test_add_tiers_breaks_on_big_gap():
     assert tiers[2] != tiers[3]
 
 
+def test_add_tiers_elite_outliers_do_not_wash_out_later_breaks():
+    """Regression: the old running-mean threshold let a couple of huge top-of-position gaps
+    inflate the average so far that no later break fired — producing one 15-deep RB tier 1.
+    With a median yardstick, the tight mid-pack still splits into multiple tiers."""
+    # Two elite RBs far ahead, then a tight pack, then a clear cliff, then another pack.
+    vbds = [85, 60, 40, 22, 21, 20, 19.5, 19, 12, 11.5, 11, 10.5]
+    view = pd.DataFrame(
+        {"player_id": list(range(len(vbds))), "position": ["RB"] * len(vbds), "vbd": vbds}
+    )
+    tiers = evaluate.add_tiers(view).set_index("player_id")["tier"]
+    assert tiers.nunique() >= 4              # not one lumped tier
+    assert tiers.value_counts().max() <= 6   # no single mega-tier
+    assert tiers[0] != tiers[1]              # the two elite RBs are tiered apart from each other
+    assert tiers[7] != tiers[8]             # the cliff after the first pack starts a new tier
+
+
 def test_add_adp_value_zero_when_adp_matches_vbd_rank():
     view = pd.DataFrame(
         {

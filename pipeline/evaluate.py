@@ -6,6 +6,8 @@ DESIGN.md §9 flags this as an explicit unknown ("football stat abbrevs — insp
 """
 from __future__ import annotations
 
+import statistics
+
 import pandas as pd
 
 import config
@@ -66,24 +68,35 @@ def add_vbd(view: pd.DataFrame) -> pd.DataFrame:
     return view
 
 
-def add_tiers(view: pd.DataFrame, gap_multiplier: float = config.TIER_GAP_MULTIPLIER) -> pd.DataFrame:
-    """Gap-based tiers within each position (DESIGN.md §6.3): new tier when the gap to the next
-    player exceeds `gap_multiplier` x the running average gap seen so far at that position."""
+def add_tiers(
+    view: pd.DataFrame,
+    gap_multiplier: float = config.TIER_GAP_MULTIPLIER,
+    min_gap: float = config.TIER_MIN_GAP,
+) -> pd.DataFrame:
+    """Gap-based tiers within each position (DESIGN.md §6.3): a new tier starts when the VBD drop
+    to the next player exceeds a threshold.
+
+    The threshold is `gap_multiplier` x the *median* adjacent gap across the draftable top of the
+    position (floored at `min_gap` points). Median, not mean: the huge gaps between the few elite
+    players at a position would inflate a mean so far that no later break ever fires — the old
+    running-mean version produced a single 15-deep RB "tier 1"."""
     view = view.copy()
     view["tier"] = 0
     for position, group in view.groupby("position"):
         ranked = group.sort_values("vbd", ascending=False)
         idx = ranked.index.tolist()
         vbds = ranked["vbd"].tolist()
+
+        head = vbds[: min(len(vbds), 40)]
+        pos_gaps = [head[i - 1] - head[i] for i in range(1, len(head)) if head[i - 1] - head[i] > 0]
+        yardstick = statistics.median(pos_gaps) if pos_gaps else min_gap
+        threshold = max(gap_multiplier * yardstick, min_gap)
+
         tier = 1
-        gaps_seen = []
         view.loc[idx[0], "tier"] = tier
         for i in range(1, len(vbds)):
-            gap = vbds[i - 1] - vbds[i]
-            avg_gap = sum(gaps_seen) / len(gaps_seen) if gaps_seen else max(gap, 0.5)
-            if gap > gap_multiplier * avg_gap and gaps_seen:
+            if vbds[i - 1] - vbds[i] > threshold:
                 tier += 1
-            gaps_seen.append(gap)
             view.loc[idx[i], "tier"] = tier
     return view
 

@@ -62,12 +62,9 @@ SCORING = {
 # Kicker / DST use their own scoring tables (ESPN-provided actuals; not derived from SCORING above).
 
 # --- Tiering (§6.3) ---------------------------------------------------------
-# New tier starts when the VBD drop to the next player exceeds
-#   max(TIER_GAP_MULTIPLIER x median adjacent gap over the position's draftable top,
-#       TIER_MIN_GAP points).
-# Median (not mean) so the large gaps between elite players don't wash out later breaks.
-TIER_GAP_MULTIPLIER = 3.0
-TIER_MIN_GAP = 2.0
+# New tier starts when the gap to the next player exceeds this multiple of the
+# position's local average gap.
+TIER_GAP_MULTIPLIER = 0.75
 
 # --- Paths -------------------------------------------------------------------
 ROOT = Path(__file__).parent
