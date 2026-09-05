@@ -1,0 +1,184 @@
+<meta charset="utf-8" />
+<title>Draft Cheat Sheet — Fantasy Football</title>
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  /* ---- screen ---- */
+  main.cheat { max-width: 1400px; }
+  .cheat h1 { margin: 0 0 2px; }
+  .cheat .sub { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+  .cheat .printbtn {
+    background: var(--accent); color: #fff; border: 0; border-radius: 6px;
+    padding: 7px 14px; font-size: 13px; cursor: pointer; margin-left: 10px;
+  }
+  .grid { display: grid; gap: 18px; }
+  .grid.cols4 { grid-template-columns: repeat(4, 1fr); }
+  .grid.cols2 { grid-template-columns: repeat(2, 1fr); }
+  .col h2 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); margin: 0 0 6px; border-bottom: 1px solid var(--border); padding-bottom: 3px;
+  }
+  .plist { font-size: 12.5px; line-height: 1.5; }
+  .plist .row { display: flex; gap: 6px; white-space: nowrap; }
+  .plist .row .nm { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; }
+  .plist .row .tm { color: var(--muted); width: 30px; }
+  .plist .row .by { color: var(--muted); width: 34px; text-align: right; }
+  .plist .row .ad { width: 34px; text-align: right; }
+  .tierhdr {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--accent); margin: 5px 0 1px; border-top: 1px dashed var(--border); padding-top: 3px;
+  }
+  .box { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .box h2 { margin-top: 0; }
+  .box.good h2 { color: var(--good); }
+  .box.bad h2 { color: var(--warn); }
+  .reminders { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .reminders b { color: var(--text); }
+  .qbflag { color: var(--bad); }
+  section { margin-bottom: 20px; }
+
+  /* ---- print: clean, dense, monochrome, landscape ---- */
+  @media print {
+    @page { size: landscape; margin: 0.35in; }
+    header.topnav, .banner, .printbtn, .noprint { display: none !important; }
+    body { background: #fff; color: #000; font-size: 10px; }
+    main.cheat { padding: 0; max-width: none; }
+    .cheat .sub { color: #444; }
+    .col h2 { color: #000; border-color: #000; }
+    .tierhdr { color: #000; border-color: #999; }
+    .plist { font-size: 9px; line-height: 1.35; }
+    .plist .row .tm, .plist .row .by { color: #555; }
+    .box { border-color: #000; }
+    .box.good h2, .box.bad h2 { color: #000; }
+    .reminders { color: #000; }
+    .qbflag { color: #000; font-weight: 700; }
+    .grid { gap: 10px; }
+    section { margin-bottom: 12px; break-inside: avoid; }
+  }
+</style>
+<main class="cheat">
+  <h1>Draft Cheat Sheet <button class="printbtn noprint" onclick="window.print()">Print</button></h1>
+  <div class="sub" id="sub">Loading…</div>
+
+  <section>
+    <div class="col"><h2>Overall — first ~30 (VBD rank)</h2></div>
+    <div class="grid cols2" id="overall"></div>
+    <div class="reminders" style="margin-top:6px">
+      <span class="qbflag">*</span> QB — VBD overrates QBs in a 1-QB league; their true draft slot is far
+      later (see ADP). Don't take the rank at face value.
+    </div>
+  </section>
+
+  <section>
+    <div class="grid cols4" id="positions"></div>
+  </section>
+
+  <section>
+    <div class="grid cols4">
+      <div class="col"><h2>K — by ADP</h2><div class="plist" id="k"></div>
+        <div class="reminders" style="margin-top:4px">Last two rounds. Take the best Week 1 matchup; stream all year.</div>
+      </div>
+      <div class="col"><h2>DST — streaming</h2><div class="reminders" id="dst"></div></div>
+      <div class="box good"><h2>Targets — RB/WR value</h2><div class="plist" id="targets"></div>
+        <div class="reminders" style="margin-top:4px">ADP lags the model's rank — fine to take a round early. (TE/QB excluded — VBD inflates them; use their tier columns.)</div>
+      </div>
+      <div class="box bad"><h2>Let them come to you — RB/WR</h2><div class="plist" id="reaches"></div>
+        <div class="reminders" style="margin-top:4px">Model ranks them below their ADP — usually still there next pick.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reminders" id="reminders"></section>
+</main>
+<script src="assets/nav.js"></script>
+<script>
+  const POS_COLS = ["RB", "WR", "QB", "TE"];
+  const POS_DEPTH = { RB: 26, WR: 32, QB: 14, TE: 16 };
+
+  const rankRow = (p) => `
+    <div class="row">
+      <span class="ad">${p.vbd_rank ?? ""}</span>
+      <span class="nm">${p.name}${p.position === "QB" ? ' <span class="qbflag">*</span>' : ""}</span>
+      <span class="tm">${p.position ?? ""}</span>
+      <span class="tm">${p.pro_team ?? ""}</span>
+      <span class="by">${p.bye_week ? "b" + p.bye_week : ""}</span>
+      <span class="ad">${p.adp ?? "—"}</span>
+    </div>`;
+
+  const nameRow = (p) => `
+    <div class="row">
+      <span class="nm">${p.name}</span>
+      <span class="tm">${p.pro_team ?? ""}</span>
+      <span class="by">${p.bye_week ? "b" + p.bye_week : ""}</span>
+      <span class="ad">${p.adp ?? "—"}</span>
+    </div>`;
+
+  Promise.all([
+    fetch("data/draft-board.json", { cache: "no-store" }).then((r) => r.json()),
+    fetch("data/meta.json", { cache: "no-store" }).then((r) => r.json()).catch(() => ({})),
+  ])
+    .then(([board, meta]) => {
+      const P = board.players || [];
+      const ranked = P.filter((p) => p.vbd_rank != null).sort((a, b) => a.vbd_rank - b.vbd_rank);
+
+      const s = board.scoring || {};
+      const dataAge = meta.generated_at ? new Date(meta.generated_at).toLocaleString() : "unknown";
+      document.getElementById("sub").innerHTML =
+        `${board.num_teams}-team · half-PPR (${s.rec}/rec) · ${s.pass_td}pt pass TD · ` +
+        `start ${Object.entries(board.roster_slots || {}).filter(([k]) => !["BENCH","IR"].includes(k)).map(([k,v]) => v+k).join(" / ")}` +
+        ` &nbsp;|&nbsp; board data as of <b>${dataAge}</b> &nbsp;|&nbsp; printed ${new Date().toLocaleString()}`;
+
+      // Overall top 30, two columns of 15
+      const top = ranked.slice(0, 30);
+      document.getElementById("overall").innerHTML =
+        [[0, 15], [15, 30]].map(([a, b]) =>
+          `<div class="plist">${top.slice(a, b).map((p) => rankRow(p)).join("")}</div>`
+        ).join("");
+
+      // Positional tier columns
+      document.getElementById("positions").innerHTML = POS_COLS.map((pos) => {
+        const list = P.filter((p) => p.position === pos && p.vbd != null)
+          .sort((a, b) => b.vbd - a.vbd).slice(0, POS_DEPTH[pos]);
+        let html = "", lastTier = null;
+        for (const p of list) {
+          if (p.tier !== lastTier) { html += `<div class="tierhdr">Tier ${p.tier ?? "?"}</div>`; lastTier = p.tier; }
+          html += nameRow(p);
+        }
+        return `<div class="col"><h2>${pos} — top ${list.length}</h2><div class="plist">${html}</div></div>`;
+      }).join("");
+
+      // K: the only trustworthy signal is FFC ADP (projected_points is 0 for every kicker).
+      const kByAdp = P.filter((p) => p.position === "K" && p.adp != null && p.adp < 200)
+        .sort((a, b) => a.adp - b.adp).slice(0, 10);
+      document.getElementById("k").innerHTML = kByAdp.map((p) => nameRow(p)).join("")
+        || `<div class="reminders">No K ADP loaded.</div>`;
+
+      // DST: no ADP resolves (name-format mismatch) and no VBD — don't fake a ranking.
+      document.getElementById("dst").innerHTML =
+        `Draft in the last 1–2 rounds. Pick a Week 1 <b>home favorite vs. a weak offense</b>, then
+         stream weekly off matchup. Don't pay up for a "name" defense.`;
+
+      // Targets / reaches: RB/WR only. TE & QB adp_value is a mirage in 1-per-team formats
+      // (replacement level is so low that mid-tier guys look like steals). Constrain BOTH
+      // sides to where the numbers mean something: model actually rates him, ADP is real.
+      const rw = P.filter((p) => ["RB", "WR"].includes(p.position)
+        && p.adp_value != null && p.adp != null && p.adp <= 120 && (p.vbd_rank ?? 999) <= 110);
+      const targets = rw.filter((p) => p.adp_value >= 8)
+        .sort((a, b) => b.adp_value - a.adp_value).slice(0, 8);
+      const reaches = rw.filter((p) => p.adp_value <= -8)
+        .sort((a, b) => a.adp_value - b.adp_value).slice(0, 8);
+      const valRow = (p) => `<div class="row"><span class="nm">${p.name}</span><span class="tm">${p.position}</span><span class="ad">${p.adp}</span><span class="by">${p.adp_value > 0 ? "+" : ""}${Math.round(p.adp_value)}</span></div>`;
+      document.getElementById("targets").innerHTML = targets.map(valRow).join("");
+      document.getElementById("reaches").innerHTML = reaches.map(valRow).join("");
+
+      // Reminders — pull scarcity live
+      const sc = board.scarcity || {};
+      document.getElementById("reminders").innerHTML = `
+        <b>On the clock:</b> draft the <b>last player in a tier</b> before it breaks — tier &gt; exact rank.
+        &nbsp;·&nbsp; <b>RB is the scarce position</b> (dropoff ${sc.RB ?? "?"} vs WR ${sc.WR ?? "?"}) — leave rounds 1–2 with RB unless a WR tier is about to empty.
+        &nbsp;·&nbsp; <b>Don't reach for QB / K / DST</b> — 1 slot each, replaceable; QB ADP shows the real window.
+        &nbsp;·&nbsp; <b>Byes:</b> avoid 3+ starters on the same bye week (the "b#" tag).`;
+    })
+    .catch((err) => {
+      document.getElementById("sub").textContent = `Couldn't load draft-board.json — run the pipeline. (${err.message})`;
+    });
+</script>
