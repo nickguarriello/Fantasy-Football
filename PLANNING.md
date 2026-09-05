@@ -47,9 +47,29 @@ solo elite tiers + a clean 10-man RB2 pack + Achane alone + mid tiers; WR = Nacu
 JSN, Lamb/JJ/Rice, …; TE = Bowers, McBride, then the 7-man positional-advantage group. Draft-usable.
 (Deep undrafted players still collapse into one trailing mega-tier — harmless, not worth capping.)
 
-**Tests:** 53 pass (was 42). New: `test_fetch_projections.py` (FFC stage/scoping, network
+**Tests:** 54 pass (was 42). New: `test_fetch_projections.py` (FFC stage/scoping, network
 non-fatal, Sleeper sentinel drop), transform ADP priority + de-dup + PK/DEF mapping,
-`test_fetch_nfl.py` nflverse→ESPN team translation, `test_evaluate.py` tier-no-washout regression.
+`test_fetch_nfl.py` nflverse→ESPN team translation, `test_evaluate.py` tier-no-washout
+regression, `test_draft.py` adp_value blanked for QB/K/DST.
+
+**Also this session (draft-day tooling):**
+- **QB value fix (option B)** — `draft.build_board()` nulls `adp_value` for QB/K/DST
+  (`ADP_VALUE_SUPPRESSED_POS`); VBD overrates 1-slot pools so the "value" number invited a
+  reach (Josh Allen: VBD rank 4 vs ADP ~31 → fake +27). `draft.html` tooltip explains the
+  blank. Model math untouched — the real fix (**A2: streaming replacement level for
+  QB/TE/K/DST** in `evaluate._replacement_rank`) is deferred to **after the draft**.
+- **`docs/cheatsheet.html`** — printable (landscape) board: overall top-30 w/ QB rows flagged,
+  RB/WR/QB/TE tier columns, K by FFC ADP, DST streaming note, RB/WR-only Targets / "let them
+  come" (window-clamped so tail garbage + TE/QB VBD-inflation don't leak in).
+- **`docs/draftplan.html`** — per-slot snake plan for all 12 slots (dropdown). Pick your slot
+  ~1h before start → pick numbers, cadence/RB-math lead, per-pick in-range board. No pipeline
+  run needed; reads the live JSON.
+- Both linked in `nav.js`. Temp Sun/Mon/pre-draft cron corrected to **EDT** (draft is
+  8:15pm ET Mon = 00:15 UTC Tue).
+- Note: a `workflow_dispatch` mid-session failed once on a transient ESPN `ConnectionReset`
+  → `validate` correctly blocked the publish (0 projection rows in a fresh DB) → a re-fire 2
+  min later succeeded. If a pre-draft run goes red Monday, just re-trigger; last-good board
+  stays live.
 
 **Not yet done / next:**
 1. **Push + `workflow_dispatch`** to regenerate the board with all three fixes — not committed
