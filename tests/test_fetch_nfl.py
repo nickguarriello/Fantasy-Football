@@ -45,6 +45,30 @@ def test_bye_weeks_computed_correctly(conn, monkeypatch):
     assert byes == [("A", 3), ("B", 2), ("C", 1)]
 
 
+def test_nflverse_team_codes_translated_to_espn(conn, monkeypatch):
+    """nflverse spells the Rams/Commanders LA/WAS; ESPN (dim_players.pro_team) uses LAR/WSH.
+    dim_schedule must store the ESPN spelling or byes never join (PLANNING.md 2026-08-03)."""
+    df = pd.DataFrame(
+        [
+            {"week": 1, "home_team": "LA", "away_team": "WAS", "game_type": "REG", "total_line": 44.0, "spread_line": -3.0},
+            {"week": 1, "home_team": "DET", "away_team": "GB", "game_type": "REG", "total_line": 50.0, "spread_line": -6.0},
+            {"week": 2, "home_team": "LA", "away_team": "DET", "game_type": "REG", "total_line": 47.0, "spread_line": -1.0},
+            {"week": 2, "home_team": "GB", "away_team": "CHI", "game_type": "REG", "total_line": 41.0, "spread_line": -2.0},
+            # WAS idle week 2 -> bye; must be recorded under 'WSH', not 'WAS'.
+        ]
+    )
+    monkeypatch.setattr(fetch_nfl, "_import", lambda: SimpleNamespace(import_schedules=lambda years: df))
+    fetch_nfl.fetch_schedule_and_vegas(conn)
+
+    teams = {r[0] for r in conn.execute("SELECT DISTINCT pro_team FROM dim_schedule").fetchall()}
+    assert "LA" not in teams and "WAS" not in teams
+    assert {"LAR", "WSH", "DET"} <= teams
+    bye = conn.execute("SELECT pro_team, week FROM dim_schedule WHERE is_bye = 1").fetchall()
+    assert ("WSH", 2) in bye and not any(t == "WAS" for t, _ in bye)
+    vegas_team = conn.execute("SELECT DISTINCT pro_team FROM fact_vegas").fetchall()
+    assert ("LAR",) in vegas_team
+
+
 def test_playoff_rows_do_not_create_false_byes(conn, monkeypatch):
     """A team eliminated from playoffs has no playoff-week row — that must not look like a bye."""
     df = pd.concat(

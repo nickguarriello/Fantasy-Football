@@ -10,6 +10,24 @@ import sqlite3
 
 import config
 
+# nflverse team abbreviations that differ from ESPN's (fetch_espn.py writes ESPN codes to
+# dim_players.pro_team; dim_schedule/fact_vegas are joined back to players on that column, so
+# they must agree). LA/WAS are the long-standing nflverse spellings; ESPN uses LAR/WSH. This
+# mismatch silently blanked bye weeks for every Rams and Commanders player (PLANNING.md
+# 2026-08-03). Legacy relocations included so a stale row can't reintroduce the bug.
+NFLVERSE_TEAM_MAP = {
+    "LA": "LAR",
+    "WAS": "WSH",
+    "JAC": "JAX",
+    "OAK": "LV",
+    "SD": "LAC",
+    "STL": "LAR",
+}
+
+
+def _espn_team(code):
+    return NFLVERSE_TEAM_MAP.get(code, code)
+
 
 def _import():
     import nfl_data_py as nfl  # imported lazily so the module imports without the dep at test time
@@ -39,11 +57,11 @@ def fetch_schedule_and_vegas(conn: sqlite3.Connection) -> dict:
         for side, opp_col in (("home_team", "away_team"), ("away_team", "home_team")):
             team, opp = r.get(side), r.get(opp_col)
             if team:
-                sched_rows.append((team, config.YEAR, week, opp, 0))
+                sched_rows.append((_espn_team(team), config.YEAR, week, _espn_team(opp) if opp else opp, 0))
         if r.get("home_team"):
             vegas_rows.append(
                 (
-                    r["home_team"],
+                    _espn_team(r["home_team"]),
                     config.YEAR,
                     week,
                     r.get("total_line", None) and float(r["total_line"]) / 2 + (float(r.get("spread_line", 0) or 0) / 2),
@@ -59,7 +77,7 @@ def fetch_schedule_and_vegas(conn: sqlite3.Connection) -> dict:
         for side in ("home_team", "away_team"):
             team = r.get(side)
             if team:
-                team_weeks_played.setdefault(team, set()).add(week)
+                team_weeks_played.setdefault(_espn_team(team), set()).add(week)
 
     if team_weeks_played:
         max_week = max(w for weeks in team_weeks_played.values() for w in weeks)
