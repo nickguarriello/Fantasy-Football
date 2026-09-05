@@ -7,10 +7,17 @@ import pandas as pd
 
 import config
 
-SLEEPER_POSITION_MAP = {"DEF": "DST"}  # Sleeper calls it DEF; our convention (fetch_espn.py) is DST
+# External sources spell the two team-defense / kicker positions their own way; our convention
+# (fetch_espn.py) is DST / K. FFC uses DEF/PK, Sleeper uses DEF.
+ADP_POSITION_MAP = {"DEF": "DST", "PK": "K"}
+SLEEPER_POSITION_MAP = ADP_POSITION_MAP  # back-compat alias
+
+# ADP sources in priority order: the first one that has a player wins. FFC is real mock-draft
+# ADP; sleeper is a coarse search-popularity fallback for deep players FFC doesn't list.
+ADP_SOURCES = [("ffc", "stg_ffc_adp"), ("sleeper", "stg_sleeper_adp")]
 
 
-def _fuzzy_adp_matches(unmatched: pd.DataFrame, adp: pd.DataFrame, min_score=90, min_gap=5) -> list[tuple]:
+def _fuzzy_adp_matches(unmatched: pd.DataFrame, adp: pd.DataFrame, source: str, min_score=90, min_gap=5) -> list[tuple]:
     """Position-scoped fuzzy fallback for names an exact match misses (e.g. suffixes: Sleeper's
     'James Cook' vs ESPN's 'James Cook III'). Position-scoped both to cut the candidate pool and
     to avoid cross-position false positives. Only accepted when unambiguous, same rule as
@@ -32,32 +39,36 @@ def _fuzzy_adp_matches(unmatched: pd.DataFrame, adp: pd.DataFrame, min_score=90,
         if len(matches) > 1 and (top_score - matches[1][1]) < min_gap:
             continue  # ambiguous — two close candidates, don't guess
         adp_val = pool.loc[pool["name"] == top_name, "adp"].iloc[0]
-        rows.append((int(p.player_id), config.YEAR, "sleeper", float(adp_val)))
+        rows.append((int(p.player_id), config.YEAR, source, float(adp_val)))
     return rows
 
 
-def resolve_adp(conn: sqlite3.Connection) -> dict:
-    """Match staged Sleeper ADP rows onto dim_players.player_id -> fact_adp: exact
-    name+position match first, then a position-scoped fuzzy name fallback for the rest.
-    Scoping by position (not just name) avoids a same-named player at a different position
-    stealing another player's ADP."""
+def _resolve_one_adp_source(conn: sqlite3.Connection, stg_table: str, source: str) -> dict:
+    """Match one staged ADP table onto dim_players.player_id -> fact_adp: exact name+position
+    match first, then a position-scoped fuzzy name fallback for the rest. Scoping by position
+    (not just name) avoids a same-named player at a different position stealing another's ADP.
+    De-dupes the staged rows by name+position (keeping the best/earliest ADP) so a duplicate
+    external entry can't fan out onto multiple players in the merge."""
     has_stg = conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='stg_sleeper_adp'"
+        "SELECT name FROM sqlite_master WHERE type='table' AND name=?", (stg_table,)
     ).fetchone()
     if not has_stg:
-        return {"status": "skipped", "reason": "no staged ADP"}
+        return {"status": "skipped", "reason": f"no {stg_table}"}
 
     players = pd.read_sql("SELECT player_id, name, position FROM dim_players", conn)
     players["_key"] = players["name"].str.strip().str.lower()
-    adp = pd.read_sql("SELECT name, position, adp FROM stg_sleeper_adp", conn)
+    adp = pd.read_sql(f"SELECT name, position, adp FROM {stg_table}", conn)
+    if adp.empty:
+        return {"status": "skipped", "reason": f"{stg_table} empty"}
     adp["_key"] = adp["name"].str.strip().str.lower()
-    adp["position"] = adp["position"].replace(SLEEPER_POSITION_MAP)
+    adp["position"] = adp["position"].replace(ADP_POSITION_MAP)
+    adp = adp.sort_values("adp").drop_duplicates(["_key", "position"], keep="first")
 
     exact = adp.merge(players, on=["_key", "position"], suffixes=("_adp", "_player"))
-    rows = [(int(r.player_id), config.YEAR, "sleeper", float(r.adp)) for r in exact.itertuples()]
+    rows = [(int(r.player_id), config.YEAR, source, float(r.adp)) for r in exact.itertuples()]
 
     unmatched = players[~players["player_id"].isin(exact["player_id"])]
-    fuzzy_rows = _fuzzy_adp_matches(unmatched, adp) if len(unmatched) else []
+    fuzzy_rows = _fuzzy_adp_matches(unmatched, adp, source) if len(unmatched) else []
     rows.extend(fuzzy_rows)
 
     conn.executemany(
@@ -66,6 +77,11 @@ def resolve_adp(conn: sqlite3.Connection) -> dict:
     )
     conn.commit()
     return {"status": "ok", "matched": len(rows), "exact": len(exact), "fuzzy": len(fuzzy_rows), "staged": len(adp)}
+
+
+def resolve_adp(conn: sqlite3.Connection) -> dict:
+    """Resolve every configured ADP source (ADP_SOURCES) into fact_adp, one row per source."""
+    return {source: _resolve_one_adp_source(conn, stg, source) for source, stg in ADP_SOURCES}
 
 
 def player_season_view(conn: sqlite3.Connection) -> pd.DataFrame:
@@ -82,10 +98,17 @@ def player_season_view(conn: sqlite3.Connection) -> pd.DataFrame:
     proj_wide = proj.pivot_table(index="player_id", columns="stat", values="value", aggfunc="first")
     proj_wide.columns = [f"proj_{c}" for c in proj_wide.columns]
 
-    adp = pd.read_sql(
-        "SELECT player_id, adp FROM fact_adp WHERE season = ? AND source = 'sleeper'",
+    adp_all = pd.read_sql(
+        "SELECT player_id, source, adp FROM fact_adp WHERE season = ?",
         conn,
         params=(config.YEAR,),
+    )
+    # Coalesce sources in ADP_SOURCES priority order (FFC real ADP first, Sleeper proxy as fill-in).
+    priority = {source: i for i, (source, _) in enumerate(ADP_SOURCES)}
+    adp_all["_pri"] = adp_all["source"].map(priority).fillna(len(priority))
+    adp = (
+        adp_all.sort_values("_pri")
+        .drop_duplicates("player_id", keep="first")[["player_id", "adp"]]
     )
 
     byes = pd.read_sql(
