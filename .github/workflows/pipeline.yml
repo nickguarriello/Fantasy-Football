@@ -5,10 +5,10 @@ on:
     # Tue/Wed post-MNF/post-waivers. Add a Sunday-AM entry in-season for final inactives
     # (e.g. '0 14 * * 0' ~ 2h before the early slate — adjust for your timezone/kickoff).
     - cron: "0 12 * * 2,3"
-    # TEMPORARY — draft is Mon 2026-09-07 8:15pm MDT (02:15 UTC Tue). Extra refreshes for final
+    # TEMPORARY — draft is Mon 2026-09-07 8:15pm EDT (00:15 UTC Tue). Extra refreshes for final
     # injury/depth news. Remove these two lines after the draft.
-    - cron: "0 12,22 * * 0,1"   # Sun + Mon, 06:00 & 16:00 MDT
-    - cron: "0 0 * * 2"         # Tue 00:00 UTC = Mon 18:00 MDT, ~2h before the draft
+    - cron: "0 12,22 * * 0"     # Sun 08:00 & 18:00 EDT
+    - cron: "0 12,20,23 * * 1"  # Mon 08:00, 16:00, 19:00 EDT — last is ~1h before the draft
   workflow_dispatch:
 
 jobs:
