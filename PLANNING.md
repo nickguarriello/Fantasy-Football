@@ -6,7 +6,7 @@ Running build log — update every session. Newest entry on top.
 
 ## 2026-09-05 — Draft-day prep: real ADP, LAR/WSH byes, tier algo rewrite
 
-Draft is **Monday 2026-09-07, 8:15pm MDT** (02:15 UTC Tue 09-08; Labor Day, right before
+Draft is **Monday 2026-09-07, 8:15pm EDT** (00:15 UTC Tue 09-08; Labor Day, right before
 Week 1). Draft order not known yet (user will get it later). User's team = **Fricken Flea
 Flicker**, team_id 10. Session was
 "game plan and organize" — found the scheduled pipeline healthy (last real run Wed 09-02, green)
