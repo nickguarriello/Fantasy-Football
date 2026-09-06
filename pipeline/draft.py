@@ -49,6 +49,8 @@ def build_board(evaluated_view: pd.DataFrame) -> dict:
     cols = [
         "player_id", "name", "position", "pro_team", "bye_week",
         "projected_points", "vbd", "vbd_rank", "tier", "adp", "adp_value",
+        # expert consensus (FantasyPros ECR) — present when transform matched it
+        "ecr", "ecr_pos", "fp_tier", "rank_std", "value_vs_ecr", "risk", "ceiling",
     ]
     players = evaluated_view[[c for c in cols if c in evaluated_view.columns]].copy()
     # astype(object) first: on a float64 column, .where(..., None) silently recoerces None back

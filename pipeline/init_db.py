@@ -53,6 +53,18 @@ CREATE TABLE IF NOT EXISTS fact_adp (
     PRIMARY KEY (player_id, season, source)
 );
 
+CREATE TABLE IF NOT EXISTS fact_ecr (
+    player_id   INTEGER NOT NULL,
+    season      INTEGER NOT NULL,
+    ecr         REAL,                 -- FantasyPros expert consensus overall rank
+    ecr_pos     TEXT,                 -- position rank label, e.g. 'RB16'
+    rank_min    REAL,                 -- most bullish expert
+    rank_max    REAL,                 -- most bearish expert
+    rank_std    REAL,                 -- spread of expert opinion (boom/bust signal)
+    fp_tier     INTEGER,              -- FantasyPros' own tier number
+    PRIMARY KEY (player_id, season)
+);
+
 CREATE TABLE IF NOT EXISTS dim_schedule (
     pro_team    TEXT NOT NULL,
     season      INTEGER NOT NULL,

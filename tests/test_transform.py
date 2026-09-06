@@ -112,6 +112,51 @@ def test_resolve_adp_dedupes_staged_rows_no_fanout():
     assert rows == {1: 4.0, 2: 12.0}  # Allen keeps his own ADP, not Nacua's
 
 
+def _stage_ecr(conn, rows):
+    conn.execute(
+        "CREATE TABLE stg_fp_ecr (name TEXT, position TEXT, pro_team TEXT, ecr REAL, ecr_pos TEXT, "
+        "rank_min REAL, rank_max REAL, rank_ave REAL, rank_std REAL, fp_tier INTEGER, bye INTEGER)"
+    )
+    conn.executemany(
+        "INSERT INTO stg_fp_ecr (name, position, pro_team, ecr, ecr_pos, rank_min, rank_max, "
+        "rank_ave, rank_std, fp_tier, bye) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        rows,
+    )
+    conn.commit()
+
+
+def test_resolve_ecr_exact_and_fuzzy_and_types():
+    conn = sqlite3.connect(":memory:")
+    init_db.init_schema(conn)
+    conn.executemany(
+        "INSERT INTO dim_players (player_id, name, position) VALUES (?, ?, ?)",
+        [(1, "Jahmyr Gibbs", "RB"), (2, "Kenneth Walker III", "RB")],
+    )
+    _stage_ecr(conn, [
+        ("Jahmyr Gibbs", "RB", "DET", 1, "RB1", 1, 5, 1.5, 0.68, 1, 6),
+        ("Kenneth Walker", "RB", "SEA", 24, "RB11", 15, 40, 25.0, 6.4, 3, 5),  # suffix -> fuzzy
+    ])
+
+    result = transform.resolve_ecr(conn)
+    assert result["exact"] == 1 and result["fuzzy"] == 1
+
+    rows = conn.execute("SELECT player_id, ecr, fp_tier, rank_std FROM fact_ecr ORDER BY player_id").fetchall()
+    assert rows[0] == (1, 1.0, 1, 0.68)
+    # fp_tier must be a real int, not a bytes BLOB (np.int64 written straight to sqlite)
+    assert isinstance(rows[1][2], int)
+
+
+def test_player_season_view_left_joins_ecr_and_survives_absent_table():
+    conn = sqlite3.connect(":memory:")
+    init_db.init_schema(conn)
+    conn.execute("INSERT INTO dim_players (player_id, name, position) VALUES (1, 'A Player', 'WR')")
+    conn.commit()
+    # no stg_fp_ecr, no fact_ecr rows — view should still build, ecr column present and null
+    view = transform.player_season_view(conn)
+    assert "ecr" in view.columns
+    assert view.loc[0, "ecr"] != view.loc[0, "ecr"]  # NaN
+
+
 def test_position_map_translates_def_and_pk():
     conn = sqlite3.connect(":memory:")
     init_db.init_schema(conn)

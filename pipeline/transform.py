@@ -84,6 +84,91 @@ def resolve_adp(conn: sqlite3.Connection) -> dict:
     return {source: _resolve_one_adp_source(conn, stg, source) for source, stg in ADP_SOURCES}
 
 
+_ECR_VALUE_COLS = ["ecr", "ecr_pos", "rank_min", "rank_max", "rank_std", "fp_tier"]
+
+
+def _clean(v):
+    """Coerce a value for sqlite params: pandas/NumPy NaN -> None, NumPy scalars -> Python scalars
+    (sqlite3 stores an un-coerced np.int64 as a BLOB of raw bytes)."""
+    if v is None:
+        return None
+    try:
+        if pd.isna(v):
+            return None
+    except (TypeError, ValueError):
+        pass
+    return v.item() if hasattr(v, "item") else v
+
+
+def resolve_ecr(conn: sqlite3.Connection) -> dict:
+    """Match staged FantasyPros ECR rows onto dim_players.player_id -> fact_ecr: exact
+    name+position match, then a position-scoped unambiguous fuzzy fallback (same rule as
+    resolve_adp). Carries the overall ECR + the best/worst/std spread + FP's tier."""
+    has_stg = conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='stg_fp_ecr'"
+    ).fetchone()
+    if not has_stg:
+        return {"status": "skipped", "reason": "no stg_fp_ecr"}
+
+    players = pd.read_sql("SELECT player_id, name, position FROM dim_players", conn)
+    players["_key"] = players["name"].str.strip().str.lower()
+    ecr = pd.read_sql(
+        "SELECT name, position, ecr, ecr_pos, rank_min, rank_max, rank_std, fp_tier FROM stg_fp_ecr",
+        conn,
+    )
+    if ecr.empty:
+        return {"status": "skipped", "reason": "stg_fp_ecr empty"}
+    ecr["_key"] = ecr["name"].str.strip().str.lower()
+    ecr["position"] = ecr["position"].replace(ADP_POSITION_MAP)
+    ecr = ecr.sort_values("ecr").drop_duplicates(["_key", "position"], keep="first")
+
+    exact = ecr.merge(players, on=["_key", "position"], suffixes=("_ecr", "_player"))
+    resolved = {
+        int(r.player_id): {c: getattr(r, c) for c in _ECR_VALUE_COLS} for r in exact.itertuples()
+    }
+
+    unmatched = players[~players["player_id"].isin(exact["player_id"])]
+    fuzzy_n = 0
+    if len(unmatched):
+        from rapidfuzz import fuzz, process
+
+        by_pos = {pos: g for pos, g in ecr.groupby("position")}
+        for p in unmatched.itertuples():
+            pool = by_pos.get(p.position)
+            if pool is None or pool.empty:
+                continue
+            matches = process.extract(p.name, pool["name"].tolist(), scorer=fuzz.WRatio, limit=2)
+            if not matches or matches[0][1] < 90:
+                continue
+            if len(matches) > 1 and (matches[0][1] - matches[1][1]) < 5:
+                continue  # ambiguous
+            row = pool.loc[pool["name"] == matches[0][0]].iloc[0]
+            resolved[int(p.player_id)] = {c: row[c] for c in _ECR_VALUE_COLS}
+            fuzzy_n += 1
+
+    rows = [
+        (
+            pid,
+            config.YEAR,
+            _clean(d["ecr"]),
+            _clean(d["ecr_pos"]),
+            _clean(d["rank_min"]),
+            _clean(d["rank_max"]),
+            _clean(d["rank_std"]),
+            _clean(d["fp_tier"]),
+        )
+        for pid, d in resolved.items()
+    ]
+    conn.executemany(
+        "INSERT OR REPLACE INTO fact_ecr "
+        "(player_id, season, ecr, ecr_pos, rank_min, rank_max, rank_std, fp_tier) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        rows,
+    )
+    conn.commit()
+    return {"status": "ok", "matched": len(rows), "exact": len(exact), "fuzzy": fuzzy_n, "staged": len(ecr)}
+
+
 def player_season_view(conn: sqlite3.Connection) -> pd.DataFrame:
     """One row per player: identity + pivoted ESPN season projections + ADP + bye week."""
     players = pd.read_sql(
@@ -117,16 +202,25 @@ def player_season_view(conn: sqlite3.Connection) -> pd.DataFrame:
         params=(config.YEAR,),
     )
 
+    ecr = pd.read_sql(
+        "SELECT player_id, ecr, ecr_pos, rank_min, rank_max, rank_std, fp_tier "
+        "FROM fact_ecr WHERE season = ?",
+        conn,
+        params=(config.YEAR,),
+    )
+
     view = players.merge(proj_wide, on="player_id", how="left")
     view = view.merge(adp, on="player_id", how="left")
     view = view.merge(byes, on="pro_team", how="left")
+    view = view.merge(ecr, on="player_id", how="left")
     return view
 
 
 def run(conn: sqlite3.Connection) -> dict:
     adp_result = resolve_adp(conn)
+    ecr_result = resolve_ecr(conn)
     view = player_season_view(conn)
-    return {"adp": adp_result, "season_view_rows": len(view)}
+    return {"adp": adp_result, "ecr": ecr_result, "season_view_rows": len(view)}
 
 
 if __name__ == "__main__":

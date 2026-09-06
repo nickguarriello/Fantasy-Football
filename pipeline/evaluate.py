@@ -110,12 +110,60 @@ def add_adp_value(view: pd.DataFrame) -> pd.DataFrame:
     return view
 
 
+def _risk_bucket(ecr: float, std: float) -> str | None:
+    """Boom/bust from the spread of expert opinion. rank_std grows with ECR (deeper players are
+    inherently more argued-over), so compare each player's std to what's typical at his ECR.
+    `expected` is fit to the 2026 half-PPR board: median std ≈ 5 at ECR 12, ≈ 9 at 40, ≈ 16 at 90."""
+    if pd.isna(ecr) or pd.isna(std):
+        return None
+    expected = 3.0 + 0.15 * float(ecr)
+    ratio = float(std) / expected
+    if ratio < 0.7:
+        return "Safe"
+    if ratio > 1.4:
+        return "Volatile"
+    return "Balanced"
+
+
+def add_consensus(view: pd.DataFrame) -> pd.DataFrame:
+    """Expert-consensus signals from FantasyPros ECR (added by transform when available):
+      value_vs_ecr — ADP minus ECR; positive = the crowd lets him fall past where experts rank him
+      risk         — Safe / Balanced / Volatile, from the expert-rank spread relative to his ECR
+      ceiling      — True when the most bullish expert (rank_min) is well above consensus
+    All are NaN/None when ECR wasn't matched for that player."""
+    view = view.copy()
+    if "ecr" not in view.columns:
+        view["ecr"] = pd.NA
+    for col in ("ecr_pos", "rank_min", "rank_max", "rank_std", "fp_tier"):
+        if col not in view.columns:
+            view[col] = pd.NA
+
+    ecr = pd.to_numeric(view["ecr"], errors="coerce")
+    std = pd.to_numeric(view["rank_std"], errors="coerce")
+    rmin = pd.to_numeric(view["rank_min"], errors="coerce")
+    adp = pd.to_numeric(view["adp"], errors="coerce")
+
+    view["value_vs_ecr"] = (adp - ecr).round(1)
+    view["risk"] = [_risk_bucket(e, s) for e, s in zip(ecr, std)]
+    # ceiling: the most bullish expert has him >=20% and >=5 spots above consensus.
+    skill = view["position"].isin(["QB", "RB", "WR", "TE"])
+    view["ceiling"] = skill & (rmin <= 0.8 * ecr) & ((ecr - rmin) >= 5)
+    view.loc[ecr.isna() | rmin.isna(), "ceiling"] = False
+    return view
+
+
 def evaluate(view: pd.DataFrame) -> pd.DataFrame:
     view = add_projected_points(view)
     view = add_vbd(view)
     view = add_tiers(view)
     view = add_adp_value(view)
-    return view.sort_values("vbd", ascending=False).reset_index(drop=True)
+    view = add_consensus(view)
+    # Order the raw frame by expert consensus (ECR) where we have it, model VBD otherwise —
+    # every dashboard page re-sorts, so this only affects how the JSON reads.
+    view["_ecr_sort"] = pd.to_numeric(view["ecr"], errors="coerce").fillna(9999)
+    return view.sort_values(["_ecr_sort", "vbd"], ascending=[True, False]).drop(
+        columns="_ecr_sort"
+    ).reset_index(drop=True)
 
 
 if __name__ == "__main__":

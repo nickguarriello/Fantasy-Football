@@ -59,6 +59,40 @@ def test_add_tiers_breaks_on_big_gap():
     assert tiers[2] != tiers[3]
 
 
+def test_add_consensus_value_risk_ceiling():
+    view = pd.DataFrame({
+        "player_id": [1, 2, 3, 4],
+        "name": ["Falls past ECR", "Solid", "Polarizing", "No ECR"],
+        "position": ["WR", "RB", "RB", "WR"],
+        "adp": [40.0, 10.0, 100.0, 55.0],
+        "ecr": [18.0, 9.0, 90.0, pd.NA],
+        "ecr_pos": ["WR8", "RB4", "RB33", pd.NA],
+        "rank_min": [11.0, 7.0, 45.0, pd.NA],
+        "rank_max": [30.0, 14.0, 180.0, pd.NA],
+        "rank_std": [3.0, 3.5, 41.0, pd.NA],
+        "fp_tier": [2, 1, 8, pd.NA],
+    })
+    out = evaluate.add_consensus(view).set_index("player_id")
+    assert out.loc[1, "value_vs_ecr"] == 22.0          # ADP 40 - ECR 18
+    assert out.loc[1, "risk"] == "Safe"                # std 3 vs expected ~5.7
+    assert out.loc[1, "ceiling"]                       # rank_min 11 well above ECR 18
+    assert out.loc[3, "risk"] == "Volatile"            # std 41 vs expected ~16.5
+    assert out.loc[4, "risk"] in (None,) or pd.isna(out.loc[4, "risk"])  # no ECR -> no bucket
+    assert bool(out.loc[4, "ceiling"]) is False
+    assert pd.isna(out.loc[4, "value_vs_ecr"])
+
+
+def test_add_consensus_no_ecr_columns_at_all():
+    """The whole ECR merge can be absent (fetch skipped) — add_consensus must still produce the
+    columns, all null, without raising."""
+    view = pd.DataFrame({
+        "player_id": [1], "name": ["X"], "position": ["RB"], "adp": [12.0], "vbd": [30.0],
+    })
+    out = evaluate.add_consensus(view)
+    for col in ("ecr", "value_vs_ecr", "risk", "ceiling"):
+        assert col in out.columns
+
+
 def test_add_tiers_elite_outliers_do_not_wash_out_later_breaks():
     """Regression: the old running-mean threshold let a couple of huge top-of-position gaps
     inflate the average so far that no later break fired — producing one 15-deep RB tier 1.
