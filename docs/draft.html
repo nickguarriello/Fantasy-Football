@@ -20,23 +20,26 @@
     </label>
     <span id="scarcity" style="color: var(--muted); font-size: 13px"></span>
   </div>
+  <p style="color: var(--muted); font-size: 12.5px; max-width: 80ch; margin-top: 0">
+    Ordered by <b>ECR</b> — FantasyPros expert consensus (~130 experts). <b>Value</b> = ADP − ECR
+    (positive = the crowd lets him fall past where experts rank him). <b>Risk</b> = spread of expert
+    opinion. <b>▲</b> = a notably higher ceiling per the most bullish experts. <b>Model</b> is our
+    projection/VBD rank — a second opinion, not the default.
+  </p>
   <table id="board">
     <thead>
       <tr>
-        <th data-key="vbd_rank">#</th>
+        <th data-key="ecr"><span class="tooltip" title="FantasyPros Expert Consensus Rank (overall)">ECR</span></th>
         <th data-key="name">Player</th>
         <th data-key="position">Pos</th>
         <th data-key="pro_team">Team</th>
         <th data-key="bye_week">Bye</th>
-        <th data-key="tier">Tier</th>
-        <th data-key="projected_points"
-            ><span class="tooltip" title="Season projection, applying league scoring config">Proj Pts</span></th>
-        <th data-key="vbd"
-            ><span class="tooltip" title="Value over the replacement-level player at the same position">VBD</span></th>
-        <th data-key="adp"
-            ><span class="tooltip" title="Average Draft Position (Sleeper)">ADP</span></th>
-        <th data-key="adp_value"
-            ><span class="tooltip" title="ADP minus VBD rank. Positive = sleeper (going later than his value); negative = reach. Blank for QB/K/DST — VBD overrates 1-slot positions, so draft those off ADP + tier instead.">ADP Δ</span></th>
+        <th data-key="fp_tier"><span class="tooltip" title="FantasyPros positional tier">Tier</span></th>
+        <th data-key="adp"><span class="tooltip" title="Average Draft Position — Fantasy Football Calculator, half-PPR / 12-team">ADP</span></th>
+        <th data-key="value_vs_ecr"><span class="tooltip" title="ADP minus ECR. Positive = falling past expert value (target); negative = going ahead of it (reach).">Value</span></th>
+        <th data-key="risk"><span class="tooltip" title="Spread of expert ranks, normalised to his ECR: Safe / Balanced / Volatile">Risk</span></th>
+        <th data-key="vbd_rank"><span class="tooltip" title="Our projection model's overall VBD rank — an independent second opinion">Model</span></th>
+        <th data-key="vbd"><span class="tooltip" title="Value over the replacement-level player at the same position (our model)">VBD</span></th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -45,8 +48,10 @@
 <script src="assets/nav.js"></script>
 <script>
   let players = [];
-  let sortKey = "vbd_rank";
+  let sortKey = "ecr";
   let sortAsc = true;
+
+  const RISK_COLOR = { Safe: "var(--good)", Balanced: "var(--muted)", Volatile: "var(--warn)" };
 
   function render() {
     const pos = document.getElementById("posFilter").value;
@@ -70,18 +75,21 @@
     tbody.innerHTML = rows
       .map((p) => {
         const highlight = need.includes(p.position) ? ' style="background:#182a20"' : "";
-        const adpColor = p.adp_value > 0 ? "var(--good)" : p.adp_value < 0 ? "var(--bad)" : "var(--muted)";
+        const v = p.value_vs_ecr;
+        const vColor = v > 0 ? "var(--good)" : v < 0 ? "var(--bad)" : "var(--muted)";
+        const star = p.ceiling ? ' <span title="higher ceiling per bullish experts" style="color:var(--warn)">▲</span>' : "";
         return `<tr${highlight}>
-          <td>${p.vbd_rank ?? ""}</td>
-          <td>${p.name}</td>
+          <td>${p.ecr ?? ""}</td>
+          <td>${p.name}${star}</td>
           <td class="pos-${p.position}">${p.position}</td>
           <td>${p.pro_team ?? ""}</td>
           <td>${p.bye_week ?? ""}</td>
-          <td><span class="tier-badge">${p.tier ?? ""}</span></td>
-          <td>${p.projected_points?.toFixed?.(1) ?? ""}</td>
-          <td>${p.vbd?.toFixed?.(1) ?? ""}</td>
+          <td>${p.ecr_pos ?? (p.fp_tier != null ? "T" + p.fp_tier : "")}</td>
           <td>${p.adp ?? ""}</td>
-          <td style="color:${adpColor}">${p.adp_value ?? ""}</td>
+          <td style="color:${vColor}">${v == null ? "" : (v > 0 ? "+" : "") + v}</td>
+          <td style="color:${RISK_COLOR[p.risk] ?? "var(--muted)"}">${p.risk ?? ""}</td>
+          <td style="color:var(--muted)">${p.vbd_rank ?? ""}</td>
+          <td style="color:var(--muted)">${p.vbd?.toFixed?.(1) ?? ""}</td>
         </tr>`;
       })
       .join("");
@@ -105,12 +113,12 @@
     .then((board) => {
       players = board.players || [];
       document.getElementById("scarcity").textContent =
-        "Scarcity (dropoff to replacement): " +
+        "Model scarcity (VBD dropoff to replacement): " +
         Object.entries(board.scarcity || {}).map(([k, v]) => `${k} ${v}`).join(" · ");
       render();
     })
     .catch((err) => {
       document.querySelector("#board tbody").innerHTML =
-        `<tr><td colspan="10" class="placeholder">No draft-board.json yet — run the pipeline. (${err.message})</td></tr>`;
+        `<tr><td colspan="11" class="placeholder">No draft-board.json yet — run the pipeline. (${err.message})</td></tr>`;
     });
 </script>

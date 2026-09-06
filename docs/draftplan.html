@@ -70,10 +70,10 @@
 
   const row = (p, isValue) => `
     <div class="row${isValue ? " value" : ""}">
-      <span class="rk">${p.vbd_rank ?? ""}</span>
-      <span class="nm">${p.name}</span>
+      <span class="rk">${p.ecr ?? ""}</span>
+      <span class="nm">${p.name}${p.ceiling ? " ▲" : ""}</span>
       <span class="tg pos-${p.position}">${p.position}</span>
-      <span class="ti">${p.tier != null ? "T" + p.tier : ""}</span>
+      <span class="ti">${p.risk && p.risk !== "Balanced" ? p.risk[0] : ""}</span>
       <span class="by">${p.bye_week ? "b" + p.bye_week : ""}</span>
       <span class="ad">${p.adp ?? "—"}</span>
     </div>`;
@@ -120,12 +120,12 @@
       pool.forEach((p) => (posCount[p.position] = (posCount[p.position] || 0) + 1));
       const lean = Object.entries(posCount).filter(([k]) => ["RB", "WR", "TE"].includes(k))
         .sort((a, b) => b[1] - a[1]);
-      // "Best value" = biggest (ADP - model rank) gap, skill positions only (QB/K/DST VBD misleads).
-      const bestValue = [...pool].filter((p) => ["RB", "WR", "TE"].includes(p.position))
-        .sort((a, b) => (b.adp - b.vbd_rank) - (a.adp - a.vbd_rank))[0];
+      // "Best value" = biggest (ADP - ECR) gap — falls furthest past expert consensus.
+      const bestValue = [...pool].filter((p) => p.value_vs_ecr != null)
+        .sort((a, b) => b.value_vs_ecr - a.value_vs_ecr)[0];
       const hint = pool.length
         ? `In range: ${lean.map(([k, v]) => `${v} ${k}`).join(" · ")}. ` +
-          `Best value here: ${bestValue ? `${bestValue.name} (ADP ${bestValue.adp}, model #${bestValue.vbd_rank})` : "—"}.`
+          `Best value here: ${bestValue && bestValue.value_vs_ecr >= 5 ? `${bestValue.name} (ECR ${bestValue.ecr}, ADP ${bestValue.adp})` : "none stands out"}.`
         : "Deep — take best available / handcuffs / upside.";
       return `
         <div class="pick">
@@ -144,7 +144,8 @@
     const age = m.generated_at ? new Date(m.generated_at).toLocaleString() : "unknown";
     document.getElementById("sub").innerHTML =
       `${b.num_teams}-team snake · half-PPR · board data as of <b>${age}</b>. ` +
-      `Pick your slot when you get it (~1h before). Green ADP = value still on the board at that pick.`;
+      `Rows show ECR (expert rank) · ▲ higher ceiling · S/V = Safe/Volatile · ADP. ` +
+      `Pick your slot when you get it (~1h before); green = value still on the board at that pick.`;
     const sel = document.getElementById("slot");
     for (let s = 1; s <= TEAMS; s++) sel.add(new Option(`${s}`, `${s}`));
     sel.value = "6";

@@ -60,11 +60,11 @@
   <div class="sub" id="sub">Loading…</div>
 
   <section>
-    <div class="col"><h2>Overall — first ~30 (VBD rank)</h2></div>
+    <div class="col"><h2>Overall — first ~30 (expert consensus)</h2></div>
     <div class="grid cols2" id="overall"></div>
     <div class="reminders" style="margin-top:6px">
-      <span class="qbflag">*</span> QB — VBD overrates QBs in a 1-QB league; their true draft slot is far
-      later (see ADP). Don't take the rank at face value.
+      Ranked by ECR (FantasyPros, ~130 experts). <span class="qbflag">▲</span> = higher ceiling per bullish experts ·
+      <b>V</b> = ADP − ECR (falls past consensus) · risk shown when not "Balanced".
     </div>
   </section>
 
@@ -78,11 +78,11 @@
         <div class="reminders" style="margin-top:4px">Last two rounds. Take the best Week 1 matchup; stream all year.</div>
       </div>
       <div class="col"><h2>DST — streaming</h2><div class="reminders" id="dst"></div></div>
-      <div class="box good"><h2>Targets — RB/WR value</h2><div class="plist" id="targets"></div>
-        <div class="reminders" style="margin-top:4px">ADP lags the model's rank — fine to take a round early. (TE/QB excluded — VBD inflates them; use their tier columns.)</div>
+      <div class="box good"><h2>Targets — value vs. consensus</h2><div class="plist" id="targets"></div>
+        <div class="reminders" style="margin-top:4px">ADP falls past ECR — fine to take a round early.</div>
       </div>
-      <div class="box bad"><h2>Let them come to you — RB/WR</h2><div class="plist" id="reaches"></div>
-        <div class="reminders" style="margin-top:4px">Model ranks them below their ADP — usually still there next pick.</div>
+      <div class="box bad"><h2>Let them come to you</h2><div class="plist" id="reaches"></div>
+        <div class="reminders" style="margin-top:4px">Going ahead of expert consensus — usually still there next pick.</div>
       </div>
     </div>
   </section>
@@ -94,22 +94,26 @@
   const POS_COLS = ["RB", "WR", "QB", "TE"];
   const POS_DEPTH = { RB: 26, WR: 32, QB: 14, TE: 16 };
 
+  const riskTag = (p) => (p.risk && p.risk !== "Balanced")
+    ? ` <span class="tm" style="color:${p.risk === "Safe" ? "var(--good)" : "var(--warn)"}">${p.risk[0]}</span>` : "";
+  const star = (p) => (p.ceiling ? ' <span class="qbflag">▲</span>' : "");
+
   const rankRow = (p) => `
     <div class="row">
-      <span class="ad">${p.vbd_rank ?? ""}</span>
-      <span class="nm">${p.name}${p.position === "QB" ? ' <span class="qbflag">*</span>' : ""}</span>
+      <span class="ad">${p.ecr ?? p.vbd_rank ?? ""}</span>
+      <span class="nm">${p.name}${star(p)}</span>
       <span class="tm">${p.position ?? ""}</span>
       <span class="tm">${p.pro_team ?? ""}</span>
       <span class="by">${p.bye_week ? "b" + p.bye_week : ""}</span>
-      <span class="ad">${p.adp ?? "—"}</span>
+      <span class="ad">${p.value_vs_ecr != null ? (p.value_vs_ecr > 0 ? "+" : "") + Math.round(p.value_vs_ecr) : ""}</span>
     </div>`;
 
   const nameRow = (p) => `
     <div class="row">
-      <span class="nm">${p.name}</span>
+      <span class="nm">${p.name}${star(p)}</span>
       <span class="tm">${p.pro_team ?? ""}</span>
       <span class="by">${p.bye_week ? "b" + p.bye_week : ""}</span>
-      <span class="ad">${p.adp ?? "—"}</span>
+      <span class="ad">${p.adp ?? "—"}</span>${riskTag(p)}
     </div>`;
 
   Promise.all([
@@ -118,7 +122,7 @@
   ])
     .then(([board, meta]) => {
       const P = board.players || [];
-      const ranked = P.filter((p) => p.vbd_rank != null).sort((a, b) => a.vbd_rank - b.vbd_rank);
+      const ranked = P.filter((p) => p.ecr != null).sort((a, b) => a.ecr - b.ecr);
 
       const s = board.scoring || {};
       const dataAge = meta.generated_at ? new Date(meta.generated_at).toLocaleString() : "unknown";
@@ -134,13 +138,13 @@
           `<div class="plist">${top.slice(a, b).map((p) => rankRow(p)).join("")}</div>`
         ).join("");
 
-      // Positional tier columns
+      // Positional tier columns — ordered by ECR, grouped by FantasyPros tier
       document.getElementById("positions").innerHTML = POS_COLS.map((pos) => {
-        const list = P.filter((p) => p.position === pos && p.vbd != null)
-          .sort((a, b) => b.vbd - a.vbd).slice(0, POS_DEPTH[pos]);
+        const list = P.filter((p) => p.position === pos && p.ecr != null)
+          .sort((a, b) => a.ecr - b.ecr).slice(0, POS_DEPTH[pos]);
         let html = "", lastTier = null;
         for (const p of list) {
-          if (p.tier !== lastTier) { html += `<div class="tierhdr">Tier ${p.tier ?? "?"}</div>`; lastTier = p.tier; }
+          if (p.fp_tier !== lastTier) { html += `<div class="tierhdr">Tier ${p.fp_tier ?? "?"}</div>`; lastTier = p.fp_tier; }
           html += nameRow(p);
         }
         return `<div class="col"><h2>${pos} — top ${list.length}</h2><div class="plist">${html}</div></div>`;
@@ -157,18 +161,21 @@
         `Draft in the last 1–2 rounds. Pick a Week 1 <b>home favorite vs. a weak offense</b>, then
          stream weekly off matchup. Don't pay up for a "name" defense.`;
 
-      // Targets / reaches: RB/WR only. TE & QB adp_value is a mirage in 1-per-team formats
-      // (replacement level is so low that mid-tier guys look like steals). Constrain BOTH
-      // sides to where the numbers mean something: model actually rates him, ADP is real.
-      const rw = P.filter((p) => ["RB", "WR"].includes(p.position)
-        && p.adp_value != null && p.adp != null && p.adp <= 120 && (p.vbd_rank ?? 999) <= 110);
-      const targets = rw.filter((p) => p.adp_value >= 8)
-        .sort((a, b) => b.adp_value - a.adp_value).slice(0, 8);
-      const reaches = rw.filter((p) => p.adp_value <= -8)
-        .sort((a, b) => a.adp_value - b.adp_value).slice(0, 8);
-      const valRow = (p) => `<div class="row"><span class="nm">${p.name}</span><span class="tm">${p.position}</span><span class="ad">${p.adp}</span><span class="by">${p.adp_value > 0 ? "+" : ""}${Math.round(p.adp_value)}</span></div>`;
-      document.getElementById("targets").innerHTML = targets.map(valRow).join("");
-      document.getElementById("reaches").innerHTML = reaches.map(valRow).join("");
+      // Targets / reaches: ADP vs expert consensus (ECR). Works for every position — ECR already
+      // accounts for 1-QB. Kept to the range you actually draft (ECR <= 100) and a full-round gap
+      // (>= 12), max 2 per position so it isn't all one position.
+      const capPerPos = (arr) => {
+        const seen = {}; const out = [];
+        for (const p of arr) { seen[p.position] = (seen[p.position] || 0) + 1; if (seen[p.position] <= 2) out.push(p); }
+        return out;
+      };
+      const vc = P.filter((p) => p.value_vs_ecr != null && p.ecr != null && p.ecr <= 100
+        && ["QB", "RB", "WR", "TE"].includes(p.position));
+      const targets = capPerPos(vc.filter((p) => p.value_vs_ecr >= 12).sort((a, b) => b.value_vs_ecr - a.value_vs_ecr)).slice(0, 8);
+      const reaches = capPerPos(vc.filter((p) => p.value_vs_ecr <= -12).sort((a, b) => a.value_vs_ecr - b.value_vs_ecr)).slice(0, 7);
+      const valRow = (p) => `<div class="row"><span class="nm">${p.name}</span><span class="tm">${p.position}</span><span class="ad">e${p.ecr}</span><span class="by">${p.value_vs_ecr > 0 ? "+" : ""}${Math.round(p.value_vs_ecr)}</span></div>`;
+      document.getElementById("targets").innerHTML = targets.map(valRow).join("") || '<div class="reminders">nothing &gt;1 round past consensus in range</div>';
+      document.getElementById("reaches").innerHTML = reaches.map(valRow).join("") || '<div class="reminders">none</div>';
 
       // Reminders — pull scarcity live
       const sc = board.scarcity || {};

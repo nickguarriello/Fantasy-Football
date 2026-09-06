@@ -145,9 +145,11 @@ def add_consensus(view: pd.DataFrame) -> pd.DataFrame:
 
     view["value_vs_ecr"] = (adp - ecr).round(1)
     view["risk"] = [_risk_bucket(e, s) for e, s in zip(ecr, std)]
-    # ceiling: the most bullish expert has him >=20% and >=5 spots above consensus.
+    # ceiling: the most bullish expert has him clearly above consensus — >=30% higher, and by a
+    # margin that scales with depth (so it stays meaningful past the early rounds).
     skill = view["position"].isin(["QB", "RB", "WR", "TE"])
-    view["ceiling"] = skill & (rmin <= 0.8 * ecr) & ((ecr - rmin) >= 5)
+    margin = (0.10 * ecr).clip(lower=5)
+    view["ceiling"] = skill & (rmin <= 0.7 * ecr) & ((ecr - rmin) >= margin)
     view.loc[ecr.isna() | rmin.isna(), "ceiling"] = False
     return view
 
