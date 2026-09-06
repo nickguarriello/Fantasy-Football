@@ -1,17 +1,38 @@
 <meta charset="utf-8" />
 <title>Draft Assistant — Fantasy Football</title>
 <link rel="stylesheet" href="assets/style.css" />
+<style>
+  #tierWatch { display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 0 14px; }
+  .tw {
+    border: 1px solid var(--border); border-radius: 8px; padding: 7px 11px; font-size: 12.5px;
+    min-width: 150px;
+  }
+  .tw .pos { font-weight: 700; }
+  .tw .warn { color: var(--warn); }
+  .tw .ok { color: var(--good); }
+  .tw .muted { color: var(--muted); }
+  #board td .clash { color: var(--warn); font-size: 11px; }
+  .risk-Safe { color: var(--good); }
+  .risk-Volatile { color: var(--warn); }
+  .risk-Balanced { color: var(--muted); }
+  #board .val-pos { color: var(--good); }
+  #board .val-neg { color: var(--bad); }
+</style>
 <main>
   <h1>Draft Assistant</h1>
-  <p style="color: var(--muted); font-size: 13px; max-width: 70ch">
+  <p style="color: var(--muted); font-size: 13px; max-width: 74ch">
     Auto-syncs already-drafted players from ESPN whenever the pipeline runs (<span id="syncedAt"></span>).
-    Between runs, mark picks manually below — they're combined with the synced list and kept in
-    this browser only. <a href="log.html">Log/Health</a> shows when the pipeline last ran.
+    Between runs, tap <b>Mine</b> / <b>Other</b> as each pick happens — combined with the synced list,
+    kept in this browser only. Best-available is ranked by <b>expert consensus (ECR)</b>, adjusted for
+    your roster needs and bye clashes.
   </p>
 
   <div class="controls">
     <label>My team
       <select id="myTeam"><option value="">Select…</option></select>
+    </label>
+    <label>My slot
+      <input type="number" id="mySlot" min="1" max="12" step="1" style="width: 56px" placeholder="?" />
     </label>
     <label>Position
       <select id="posFilter">
@@ -20,21 +41,22 @@
         <option>TE</option><option>K</option><option>DST</option>
       </select>
     </label>
-    <button id="undoBtn">Undo last manual pick</button>
-    <button id="clearBtn">Clear manual picks</button>
+    <button id="undoBtn">Undo last</button>
+    <button id="clearBtn">Clear manual</button>
     <span id="draftedCount" style="color: var(--muted); font-size: 13px"></span>
   </div>
 
   <div id="runAlert"></div>
+  <div id="tierWatch"></div>
 
   <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start">
-    <div style="flex: 2; min-width: 420px">
-      <h2 style="font-size: 15px; color: var(--muted)">Best available</h2>
+    <div style="flex: 2; min-width: 460px">
+      <h2 style="font-size: 15px; color: var(--muted)">Best available <span id="clockNote" class="muted" style="font-size:12px"></span></h2>
       <table id="board">
         <thead>
           <tr>
-            <th>Player</th><th>Pos</th><th>Team</th><th>Tier</th>
-            <th>Proj Pts</th><th>VBD</th><th>Need-adj</th><th></th>
+            <th>ECR</th><th>Player</th><th>Pos</th><th>Tm</th><th>Pos rk</th>
+            <th>Bye</th><th>Val</th><th>Risk</th><th>Pick score</th><th></th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -43,6 +65,8 @@
     <div style="flex: 1; min-width: 240px">
       <h2 style="font-size: 15px; color: var(--muted)">My roster</h2>
       <table id="myRoster"><tbody></tbody></table>
+      <h2 style="font-size: 15px; color: var(--muted); margin-top: 18px">Board depletion</h2>
+      <table id="depletion"><tbody></tbody></table>
     </div>
   </div>
 </main>
@@ -51,116 +75,173 @@
   let board = null;       // draft-board.json
   let draftState = null;  // draft-state.json
   const STORAGE_KEY = "ff-assistant-state";
+  const START = { QB: 1, RB: 2, WR: 2, TE: 1, K: 1, DST: 1 };   // FLEX handled separately
+  const WATCH_POS = ["RB", "WR", "TE", "QB"];
 
   function loadLocal() {
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { myTeamId: null, manualPicks: [] };
+      return { myTeamId: null, mySlot: null, manualPicks: [], ...(JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}) };
     } catch {
-      return { myTeamId: null, manualPicks: [] };
+      return { myTeamId: null, mySlot: null, manualPicks: [] };
     }
   }
-  function saveLocal(state) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }
+  function saveLocal(state) { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   let local = loadLocal();
 
   function combinedDraftedOrder() {
-    // Auto picks in real pick order, then manual picks in click order — approximates recency.
     const auto = (draftState.picks || []).map((p) => ({
-      player_id: p.player_id,
-      team_id: p.team_id,
+      player_id: p.player_id, team_id: p.team_id,
       mine: local.myTeamId && p.team_id === Number(local.myTeamId),
     }));
     const manual = local.manualPicks.map((p) => ({ player_id: p.player_id, team_id: null, mine: p.mine }));
     return auto.concat(manual);
   }
+  const draftedIds = () => new Set(combinedDraftedOrder().map((p) => p.player_id));
+  const myRosterPlayerIds = () => new Set(combinedDraftedOrder().filter((p) => p.mine).map((p) => p.player_id));
+  const playerById = (id) => board.players.find((p) => p.player_id === id);
+  const ecrOf = (p) => (p.ecr ?? (p.vbd_rank ? p.vbd_rank + 60 : 999));
 
-  function draftedIds() {
-    return new Set(combinedDraftedOrder().map((p) => p.player_id));
+  function myFilled() {
+    const mine = [...myRosterPlayerIds()].map(playerById).filter(Boolean);
+    const filled = {};
+    for (const p of mine) filled[p.position] = (filled[p.position] || 0) + 1;
+    return { mine, filled };
   }
 
-  function myRosterPlayerIds() {
-    return new Set(combinedDraftedOrder().filter((p) => p.mine).map((p) => p.player_id));
+  // Which bye weeks already have 2+ of my starters (RB/WR/TE/QB) on them.
+  function myByeLoad() {
+    const { mine } = myFilled();
+    const byes = {};
+    for (const p of mine) if (["QB","RB","WR","TE"].includes(p.position) && p.bye_week) byes[p.bye_week] = (byes[p.bye_week] || 0) + 1;
+    return byes;
   }
 
-  function playerById(id) {
-    return board.players.find((p) => p.player_id === id);
+  // Picks until my next selection, from slot + count already drafted. null if slot unknown.
+  function myNextPick() {
+    const slot = Number(local.mySlot);
+    if (!slot) return null;
+    const teams = (draftState.teams || []).length || 12;
+    const made = combinedDraftedOrder().length;          // overall picks completed
+    for (let r = 1; r <= 20; r++) {
+      const n = r % 2 === 1 ? (r - 1) * teams + slot : r * teams - slot + 1;
+      if (n > made) return { pickNo: n, picksUntil: n - made - 1 };
+    }
+    return null;
+  }
+
+  function needScore(p, filled) {
+    // ECR, worsened once this position's starters are full (soft, ~¾ round in ECR space),
+    // and again if drafting him would stack a 3rd starter on a bye week I already have twice.
+    let s = ecrOf(p);
+    const need = START[p.position] || 0;
+    const have = filled[p.position] || 0;
+    if (need && have >= need) s += (["K", "DST"].includes(p.position) ? 40 : 8);
+    if (["RB","WR","TE"].includes(p.position) && have < need + 2 && p.bye_week && (myByeLoad()[p.bye_week] || 0) >= 2) s += 6;
+    return s;
   }
 
   function renderRunAlert() {
     const order = combinedDraftedOrder().slice(-5);
     const counts = {};
-    for (const pick of order) {
-      const p = playerById(pick.player_id);
-      if (!p) continue;
-      counts[p.position] = (counts[p.position] || 0) + 1;
-    }
+    for (const pick of order) { const p = playerById(pick.player_id); if (p) counts[p.position] = (counts[p.position] || 0) + 1; }
     const runs = Object.entries(counts).filter(([, n]) => n >= 3);
-    const el = document.getElementById("runAlert");
-    if (runs.length) {
-      el.innerHTML = runs
-        .map(([pos, n]) => `<div class="banner degraded">Run on ${pos}: ${n} of the last ${order.length} picks</div>`)
-        .join("");
-    } else {
-      el.innerHTML = "";
-    }
+    document.getElementById("runAlert").innerHTML = runs.length
+      ? runs.map(([pos, n]) => `<div class="banner degraded">Run on ${pos}: ${n} of the last ${order.length} picks — grab yours now if you need it, otherwise take the value the room is skipping.</div>`).join("")
+      : "";
+  }
+
+  // Per-position: the tier of the best available player, how many of that tier remain,
+  // and whether it survives to my next pick.
+  function renderTierWatch() {
+    const drafted = draftedIds();
+    const avail = board.players.filter((p) => !drafted.has(p.player_id) && p.ecr != null);
+    const next = myNextPick();
+    const el = document.getElementById("tierWatch");
+    el.innerHTML = WATCH_POS.map((pos) => {
+      const pool = avail.filter((p) => p.position === pos).sort((a, b) => a.ecr - b.ecr);
+      if (!pool.length) return "";
+      const best = pool[0];
+      const tierLeft = pool.filter((p) => p.fp_tier === best.fp_tier).length;
+      let verdict = '<span class="muted">— set slot</span>';
+      if (next) {
+        // rough: ~1/4 of the picks before your turn land on any one skill position
+        const expectedGone = Math.round(next.picksUntil * 0.25) + 1;
+        verdict = tierLeft <= expectedGone
+          ? `<span class="warn">likely gone — take now</span>`
+          : tierLeft <= expectedGone * 2
+          ? `<span class="warn">getting thin</span>`
+          : `<span class="ok">should survive</span>`;
+      }
+      return `<div class="tw">
+        <span class="pos pos-${pos}">${pos}</span> next: <b>${best.name}</b> ${best.ecr_pos ?? ""}<br>
+        <b>${tierLeft}</b> of this caliber left · ${verdict}
+      </div>`;
+    }).join("");
+
+    const clock = next
+      ? (next.picksUntil <= 0 ? "you're on the clock" : `~${next.picksUntil} picks until you're up (#${next.pickNo})`)
+      : "set My slot for pick-timing";
+    document.getElementById("clockNote").textContent = "· " + clock;
+  }
+
+  function renderDepletion() {
+    const drafted = draftedIds();
+    document.querySelector("#depletion tbody").innerHTML = ["RB", "WR", "TE", "QB"].map((pos) => {
+      const top = board.players.filter((p) => p.position === pos && p.ecr != null && p.ecr <= 120);
+      const gone = top.filter((p) => drafted.has(p.player_id)).length;
+      const pct = top.length ? Math.round((100 * gone) / top.length) : 0;
+      const c = pct >= 55 ? "var(--warn)" : "var(--muted)";
+      return `<tr><td>${pos}</td><td style="color:${c}">${gone}/${top.length} top gone (${pct}%)</td></tr>`;
+    }).join("");
   }
 
   function renderMyRoster() {
-    const mine = [...myRosterPlayerIds()].map(playerById).filter(Boolean);
-    const filled = {};
-    for (const p of mine) filled[p.position] = (filled[p.position] || 0) + 1;
-
+    const { mine, filled } = myFilled();
     const slots = board.roster_slots || {};
     const startingPositions = Object.keys(slots).filter((s) => !["BENCH", "IR", "FLEX"].includes(s));
     const rows = startingPositions
-      .map((pos) => `<tr><td>${pos}</td><td>${filled[pos] || 0} / ${slots[pos]}</td></tr>`)
-      .join("");
-    const startersUsed = startingPositions.reduce((sum, pos) => sum + Math.min(filled[pos] || 0, slots[pos]), 0);
-    const benchCount = mine.length - startersUsed;
-
+      .map((pos) => {
+        const have = filled[pos] || 0, need = slots[pos];
+        const c = have >= need ? "var(--good)" : "var(--muted)";
+        return `<tr><td>${pos}</td><td style="color:${c}">${have} / ${need}</td></tr>`;
+      }).join("");
+    const startersUsed = startingPositions.reduce((s, pos) => s + Math.min(filled[pos] || 0, slots[pos]), 0);
     document.querySelector("#myRoster tbody").innerHTML =
-      rows + `<tr><td>BENCH/FLEX</td><td>${benchCount} drafted</td></tr>` +
-      mine.map((p) => `<tr><td colspan="2" class="pos-${p.position}" style="font-size:13px">${p.name} (${p.position})</td></tr>`).join("");
-  }
-
-  function needAdjustedVbd(p, filled) {
-    const need = (board.roster_slots || {})[p.position] || 0;
-    const have = filled[p.position] || 0;
-    return p.vbd + (have < need ? 0 : -2);
+      rows + `<tr><td>BENCH/FLEX</td><td>${mine.length - startersUsed} drafted</td></tr>` +
+      mine.map((p) => `<tr><td colspan="2" class="pos-${p.position}" style="font-size:13px">${p.name} (${p.position})${p.bye_week ? " b" + p.bye_week : ""}</td></tr>`).join("");
   }
 
   function render() {
     const pos = document.getElementById("posFilter").value;
     const drafted = draftedIds();
-    const mine = [...myRosterPlayerIds()].map(playerById).filter(Boolean);
-    const filled = {};
-    for (const p of mine) filled[p.position] = (filled[p.position] || 0) + 1;
+    const { filled } = myFilled();
+    const byeLoad = myByeLoad();
 
     let rows = board.players.filter((p) => !drafted.has(p.player_id));
     if (pos) rows = rows.filter((p) => p.position === pos);
-    rows = rows
-      .map((p) => ({ ...p, need_adj: needAdjustedVbd(p, filled) }))
-      .sort((a, b) => b.need_adj - a.need_adj)
+    rows = rows.map((p) => ({ ...p, _score: needScore(p, filled) }))
+      .sort((a, b) => a._score - b._score)
       .slice(0, 60);
 
-    document.querySelector("#board tbody").innerHTML = rows
-      .map(
-        (p) => `<tr>
-          <td>${p.name}</td>
-          <td class="pos-${p.position}">${p.position}</td>
-          <td>${p.pro_team ?? ""}</td>
-          <td><span class="tier-badge">${p.tier ?? ""}</span></td>
-          <td>${p.projected_points?.toFixed?.(1) ?? ""}</td>
-          <td>${p.vbd?.toFixed?.(1) ?? ""}</td>
-          <td>${p.need_adj.toFixed(1)}</td>
-          <td>
-            <button data-id="${p.player_id}" data-mine="1">Mine</button>
-            <button data-id="${p.player_id}" data-mine="0">Other</button>
-          </td>
-        </tr>`
-      )
-      .join("");
+    document.querySelector("#board tbody").innerHTML = rows.map((p) => {
+      const v = p.value_vs_ecr;
+      const vCls = v > 0 ? "val-pos" : v < 0 ? "val-neg" : "";
+      const clash = ["RB","WR","TE","QB"].includes(p.position) && p.bye_week && (byeLoad[p.bye_week] || 0) >= 2
+        ? `<div class="clash">bye clash wk ${p.bye_week}</div>` : "";
+      return `<tr>
+        <td>${p.ecr ?? "—"}</td>
+        <td>${p.name}${p.ceiling ? ' <span class="risk-Volatile">▲</span>' : ""}${clash}</td>
+        <td class="pos-${p.position}">${p.position}</td>
+        <td>${p.pro_team ?? ""}</td>
+        <td>${p.ecr_pos ?? (p.fp_tier != null ? "T" + p.fp_tier : "")}</td>
+        <td>${p.bye_week ?? ""}</td>
+        <td class="${vCls}">${v == null ? "" : (v > 0 ? "+" : "") + Math.round(v)}</td>
+        <td class="risk-${p.risk ?? "Balanced"}">${p.risk ?? ""}</td>
+        <td>${p._score.toFixed(0)}</td>
+        <td><button data-id="${p.player_id}" data-mine="1">Mine</button>
+            <button data-id="${p.player_id}" data-mine="0">Other</button></td>
+      </tr>`;
+    }).join("");
 
     document.querySelectorAll("#board button").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -170,42 +251,30 @@
       });
     });
 
-    document.getElementById("draftedCount").textContent = `${drafted.size} drafted (${draftState.picks.length} synced + ${local.manualPicks.length} manual)`;
+    document.getElementById("draftedCount").textContent =
+      `${drafted.size} drafted (${(draftState.picks || []).length} synced + ${local.manualPicks.length} manual)`;
   }
 
-  function renderAll() {
-    render();
-    renderMyRoster();
-    renderRunAlert();
-  }
+  function renderAll() { render(); renderMyRoster(); renderRunAlert(); renderTierWatch(); renderDepletion(); }
 
-  function initTeamSelect() {
+  function initControls() {
     const sel = document.getElementById("myTeam");
     for (const t of draftState.teams || []) {
       const opt = document.createElement("option");
-      opt.value = t.team_id;
-      opt.textContent = t.team_name;
+      opt.value = t.team_id; opt.textContent = t.team_name;
       sel.appendChild(opt);
     }
     if (local.myTeamId) sel.value = local.myTeamId;
-    sel.addEventListener("change", () => {
-      local.myTeamId = sel.value || null;
-      saveLocal(local);
-      renderAll();
-    });
+    sel.addEventListener("change", () => { local.myTeamId = sel.value || null; saveLocal(local); renderAll(); });
+
+    const slot = document.getElementById("mySlot");
+    if (local.mySlot) slot.value = local.mySlot;
+    slot.addEventListener("input", () => { local.mySlot = slot.value ? Number(slot.value) : null; saveLocal(local); renderAll(); });
   }
 
   document.getElementById("posFilter").addEventListener("input", render);
-  document.getElementById("undoBtn").addEventListener("click", () => {
-    local.manualPicks.pop();
-    saveLocal(local);
-    renderAll();
-  });
-  document.getElementById("clearBtn").addEventListener("click", () => {
-    local.manualPicks = [];
-    saveLocal(local);
-    renderAll();
-  });
+  document.getElementById("undoBtn").addEventListener("click", () => { local.manualPicks.pop(); saveLocal(local); renderAll(); });
+  document.getElementById("clearBtn").addEventListener("click", () => { local.manualPicks = []; saveLocal(local); renderAll(); });
 
   renderHealthBanner(document.querySelector("main"));
 
@@ -214,14 +283,13 @@
     fetch("data/draft-state.json", { cache: "no-store" }).then((r) => r.json()),
   ])
     .then(([b, s]) => {
-      board = b;
-      draftState = s;
+      board = b; draftState = s;
       document.getElementById("syncedAt").textContent = `last synced ${new Date(s.generated_at).toLocaleString()}`;
-      initTeamSelect();
+      initControls();
       renderAll();
     })
     .catch((err) => {
       document.querySelector("#board tbody").innerHTML =
-        `<tr><td colspan="8" class="placeholder">Couldn't load draft data yet — run the pipeline. (${err.message})</td></tr>`;
+        `<tr><td colspan="10" class="placeholder">Couldn't load draft data yet — run the pipeline. (${err.message})</td></tr>`;
     });
 </script>
