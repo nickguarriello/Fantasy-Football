@@ -84,6 +84,11 @@ try:
 except ImportError:
     ESPN_SWID = ESPN_S2 = None
 
+try:
+    from fantasypros_credentials import FANTASYPROS_API_KEY  # type: ignore
+except ImportError:
+    FANTASYPROS_API_KEY = None
+
 
 def snapshot() -> Path:
     """Copy this file into config_history/ with a UTC timestamp. Run before every config change."""

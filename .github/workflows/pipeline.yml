@@ -28,6 +28,10 @@ jobs:
           ESPN_SWID: ${{ secrets.ESPN_SWID }}
           ESPN_S2: ${{ secrets.ESPN_S2 }}
         run: printf 'ESPN_SWID="%s"\nESPN_S2="%s"\n' "$ESPN_SWID" "$ESPN_S2" > espn_credentials.py
+      - name: Write FantasyPros creds
+        env:
+          FANTASYPROS_API_KEY: ${{ secrets.FANTASYPROS_API_KEY }}
+        run: printf 'FANTASYPROS_API_KEY="%s"\n' "$FANTASYPROS_API_KEY" > fantasypros_credentials.py
       - run: python -m pipeline.init_db
       - run: python main.py --mode full
       - name: Commit data
