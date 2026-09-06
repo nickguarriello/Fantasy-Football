@@ -571,7 +571,7 @@
       "rank_std": 6.24,
       "value_vs_ecr": 3.6,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4595348,
@@ -951,7 +951,7 @@
       "rank_std": 7.41,
       "value_vs_ecr": -1.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 16800,
@@ -1191,7 +1191,7 @@
       "rank_std": 8.87,
       "value_vs_ecr": -9.2,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4040715,
@@ -1371,7 +1371,7 @@
       "rank_std": 10.39,
       "value_vs_ecr": -4.1,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4572680,
@@ -1411,7 +1411,7 @@
       "rank_std": 9.79,
       "value_vs_ecr": -5.9,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4432708,
@@ -1511,7 +1511,7 @@
       "rank_std": 9.97,
       "value_vs_ecr": -5.4,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 2577417,
@@ -1551,7 +1551,7 @@
       "rank_std": 11.32,
       "value_vs_ecr": -1.5,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4047650,
@@ -1691,7 +1691,7 @@
       "rank_std": 10.25,
       "value_vs_ecr": 11.9,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3128429,
@@ -1711,7 +1711,7 @@
       "rank_std": 14.63,
       "value_vs_ecr": -22.6,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4429025,
@@ -1731,7 +1731,7 @@
       "rank_std": 13.29,
       "value_vs_ecr": 0.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4241985,
@@ -1751,7 +1751,7 @@
       "rank_std": 13.44,
       "value_vs_ecr": -6.5,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4035687,
@@ -1771,7 +1771,7 @@
       "rank_std": 12.89,
       "value_vs_ecr": -5.3,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4360761,
@@ -1811,7 +1811,7 @@
       "rank_std": 13.38,
       "value_vs_ecr": 28.7,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4429023,
@@ -1951,7 +1951,7 @@
       "rank_std": 16.59,
       "value_vs_ecr": -1.5,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 2976212,
@@ -1971,7 +1971,7 @@
       "rank_std": 22.58,
       "value_vs_ecr": -0.1,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4568490,
@@ -2051,7 +2051,7 @@
       "rank_std": 14.01,
       "value_vs_ecr": 0.2,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4569587,
@@ -2411,7 +2411,7 @@
       "rank_std": 12.69,
       "value_vs_ecr": -14.8,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3917315,
@@ -2431,7 +2431,7 @@
       "rank_std": 18.91,
       "value_vs_ecr": 12.9,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4036378,
@@ -2591,7 +2591,7 @@
       "rank_std": 18.16,
       "value_vs_ecr": 26.7,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4683062,
@@ -2611,7 +2611,7 @@
       "rank_std": 16.1,
       "value_vs_ecr": -31.2,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4373626,
@@ -2631,7 +2631,7 @@
       "rank_std": 13.48,
       "value_vs_ecr": 22.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4360689,
@@ -2651,7 +2651,7 @@
       "rank_std": 20.23,
       "value_vs_ecr": 11.7,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4429059,
@@ -2671,7 +2671,7 @@
       "rank_std": 14.06,
       "value_vs_ecr": 3.5,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4695883,
@@ -2731,7 +2731,7 @@
       "rank_std": 48.67,
       "value_vs_ecr": 29.9,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3126486,
@@ -2791,7 +2791,7 @@
       "rank_std": 21.75,
       "value_vs_ecr": 11.1,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4880281,
@@ -2831,7 +2831,7 @@
       "rank_std": 17.73,
       "value_vs_ecr": -21.5,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3912547,
@@ -2851,7 +2851,7 @@
       "rank_std": 22.78,
       "value_vs_ecr": 11.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4686658,
@@ -2871,7 +2871,7 @@
       "rank_std": 22.48,
       "value_vs_ecr": 16.4,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4596334,
@@ -2891,7 +2891,7 @@
       "rank_std": 24.51,
       "value_vs_ecr": 13.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4429013,
@@ -2931,7 +2931,7 @@
       "rank_std": 23.18,
       "value_vs_ecr": 21.7,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4832800,
@@ -2951,7 +2951,7 @@
       "rank_std": 28.24,
       "value_vs_ecr": -7.9,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3046439,
@@ -2971,7 +2971,7 @@
       "rank_std": 20.73,
       "value_vs_ecr": 13.4,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4426385,
@@ -2991,7 +2991,7 @@
       "rank_std": 23.4,
       "value_vs_ecr": -8.6,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4432577,
@@ -3011,7 +3011,7 @@
       "rank_std": 24.57,
       "value_vs_ecr": 13.6,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4428718,
@@ -3031,7 +3031,7 @@
       "rank_std": 25.17,
       "value_vs_ecr": -20.9,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3917792,
@@ -3071,7 +3071,7 @@
       "rank_std": 23.9,
       "value_vs_ecr": 19.1,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3117256,
@@ -3091,7 +3091,7 @@
       "rank_std": 24.48,
       "value_vs_ecr": 0.8,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4430539,
@@ -3111,7 +3111,7 @@
       "rank_std": 20.59,
       "value_vs_ecr": 0.9,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4597500,
@@ -3171,7 +3171,7 @@
       "rank_std": 24.78,
       "value_vs_ecr": -5.1,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4685247,
@@ -3191,7 +3191,7 @@
       "rank_std": 28.14,
       "value_vs_ecr": -1.9,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4047365,
@@ -3231,7 +3231,7 @@
       "rank_std": 34.85,
       "value_vs_ecr": -1.5,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4430834,
@@ -3271,7 +3271,7 @@
       "rank_std": 34.0,
       "value_vs_ecr": 3.9,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4428850,
@@ -3291,7 +3291,7 @@
       "rank_std": 33.17,
       "value_vs_ecr": -5.8,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4360516,
@@ -3311,7 +3311,7 @@
       "rank_std": 41.42,
       "value_vs_ecr": -3.1,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4241474,
@@ -3331,7 +3331,7 @@
       "rank_std": 19.23,
       "value_vs_ecr": -3.7,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4241463,
@@ -3351,7 +3351,7 @@
       "rank_std": 27.81,
       "value_vs_ecr": -39.9,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 5083754,
@@ -3391,7 +3391,7 @@
       "rank_std": 29.55,
       "value_vs_ecr": -7.7,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4600981,
@@ -3411,7 +3411,7 @@
       "rank_std": 29.01,
       "value_vs_ecr": 3.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3886598,
@@ -3451,7 +3451,7 @@
       "rank_std": 28.9,
       "value_vs_ecr": 8.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4382466,
@@ -3471,7 +3471,7 @@
       "rank_std": 30.08,
       "value_vs_ecr": -22.9,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4723820,
@@ -3491,7 +3491,7 @@
       "rank_std": 32.91,
       "value_vs_ecr": -22.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4685720,
@@ -3511,7 +3511,7 @@
       "rank_std": 39.5,
       "value_vs_ecr": -44.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4570037,
@@ -3651,7 +3651,7 @@
       "rank_std": 34.52,
       "value_vs_ecr": -72.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3925357,
@@ -3671,7 +3671,7 @@
       "rank_std": 31.36,
       "value_vs_ecr": -41.1,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4430968,
@@ -3711,7 +3711,7 @@
       "rank_std": 44.53,
       "value_vs_ecr": -16.8,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4240603,
@@ -3731,7 +3731,7 @@
       "rank_std": 45.77,
       "value_vs_ecr": 272.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4686728,
@@ -3771,7 +3771,7 @@
       "rank_std": 35.57,
       "value_vs_ecr": -36.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4360939,
@@ -3871,7 +3871,7 @@
       "rank_std": 37.92,
       "value_vs_ecr": -30.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 8439,
@@ -3891,7 +3891,7 @@
       "rank_std": 43.84,
       "value_vs_ecr": -7.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4361411,
@@ -3911,7 +3911,7 @@
       "rank_std": 29.93,
       "value_vs_ecr": 31.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4869961,
@@ -4011,7 +4011,7 @@
       "rank_std": 34.97,
       "value_vs_ecr": -22.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 5123663,
@@ -4031,7 +4031,7 @@
       "rank_std": 24.07,
       "value_vs_ecr": -25.3,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 2977187,
@@ -4051,7 +4051,7 @@
       "rank_std": 29.33,
       "value_vs_ecr": -57.3,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4685246,
@@ -4231,7 +4231,7 @@
       "rank_std": 26.08,
       "value_vs_ecr": -28.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 2971573,
@@ -4331,7 +4331,7 @@
       "rank_std": 29.47,
       "value_vs_ecr": -33.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3045147,
@@ -4571,7 +4571,7 @@
       "rank_std": 23.31,
       "value_vs_ecr": 235.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4832846,
@@ -4651,7 +4651,7 @@
       "rank_std": 47.7,
       "value_vs_ecr": -148.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4366031,
@@ -4711,7 +4711,7 @@
       "rank_std": 27.46,
       "value_vs_ecr": -41.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 5081432,
@@ -4871,7 +4871,7 @@
       "rank_std": 28.54,
       "value_vs_ecr": -59.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4695404,
@@ -4891,7 +4891,7 @@
       "rank_std": 24.68,
       "value_vs_ecr": 259.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4685397,
@@ -4931,7 +4931,7 @@
       "rank_std": 21.86,
       "value_vs_ecr": -125.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4367209,
@@ -5131,7 +5131,7 @@
       "rank_std": 40.36,
       "value_vs_ecr": -43.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 17372,
@@ -5211,7 +5211,7 @@
       "rank_std": 26.58,
       "value_vs_ecr": 266.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4874509,
@@ -5231,7 +5231,7 @@
       "rank_std": 33.81,
       "value_vs_ecr": 227.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4599739,
@@ -5271,7 +5271,7 @@
       "rank_std": 28.82,
       "value_vs_ecr": 249.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3122840,
@@ -5311,7 +5311,7 @@
       "rank_std": 25.04,
       "value_vs_ecr": -79.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4432762,
@@ -5331,7 +5331,7 @@
       "rank_std": 42.36,
       "value_vs_ecr": -54.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4686472,
@@ -5351,7 +5351,7 @@
       "rank_std": 25.83,
       "value_vs_ecr": -90.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4567104,
@@ -5511,7 +5511,7 @@
       "rank_std": 24.51,
       "value_vs_ecr": 368.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4429148,
@@ -5571,7 +5571,7 @@
       "rank_std": 28.58,
       "value_vs_ecr": 402.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4431574,
@@ -5611,7 +5611,7 @@
       "rank_std": 23.9,
       "value_vs_ecr": null,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4808839,
@@ -5711,7 +5711,7 @@
       "rank_std": 41.7,
       "value_vs_ecr": 384.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4685350,
@@ -5731,7 +5731,7 @@
       "rank_std": 41.31,
       "value_vs_ecr": 386.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3116164,
@@ -5771,7 +5771,7 @@
       "rank_std": 41.94,
       "value_vs_ecr": -193.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4372561,
@@ -5831,7 +5831,7 @@
       "rank_std": 48.64,
       "value_vs_ecr": 327.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4431545,
@@ -5851,7 +5851,7 @@
       "rank_std": 42.21,
       "value_vs_ecr": 375.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 2576925,
@@ -5951,7 +5951,7 @@
       "rank_std": 38.24,
       "value_vs_ecr": 345.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4710341,
@@ -5971,7 +5971,7 @@
       "rank_std": 38.31,
       "value_vs_ecr": -126.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4360438,
@@ -6211,7 +6211,7 @@
       "rank_std": 63.11,
       "value_vs_ecr": -37.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4678006,
@@ -6231,7 +6231,7 @@
       "rank_std": 38.16,
       "value_vs_ecr": 82.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4249417,
@@ -6311,7 +6311,7 @@
       "rank_std": 34.6,
       "value_vs_ecr": 349.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4608810,
@@ -6411,7 +6411,7 @@
       "rank_std": 26.92,
       "value_vs_ecr": 149.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 2573401,
@@ -6431,7 +6431,7 @@
       "rank_std": 33.1,
       "value_vs_ecr": 310.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4240472,
@@ -6451,7 +6451,7 @@
       "rank_std": 33.56,
       "value_vs_ecr": 340.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3116385,
@@ -6471,7 +6471,7 @@
       "rank_std": 41.43,
       "value_vs_ecr": -132.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3050478,
@@ -6511,7 +6511,7 @@
       "rank_std": 37.49,
       "value_vs_ecr": 278.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4426948,
@@ -6551,7 +6551,7 @@
       "rank_std": 82.63,
       "value_vs_ecr": 57.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 5150247,
@@ -6671,7 +6671,7 @@
       "rank_std": 73.68,
       "value_vs_ecr": -130.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4567156,
@@ -6751,7 +6751,7 @@
       "rank_std": 45.7,
       "value_vs_ecr": -146.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4362887,
@@ -6771,7 +6771,7 @@
       "rank_std": 73.53,
       "value_vs_ecr": 66.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4426386,
@@ -6991,7 +6991,7 @@
       "rank_std": 69.46,
       "value_vs_ecr": 290.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4685307,
@@ -7091,7 +7091,7 @@
       "rank_std": 70.02,
       "value_vs_ecr": 267.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4036131,
@@ -7111,7 +7111,7 @@
       "rank_std": 32.63,
       "value_vs_ecr": 264.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4431487,
@@ -7131,7 +7131,7 @@
       "rank_std": 55.7,
       "value_vs_ecr": 300.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4360797,
@@ -7191,7 +7191,7 @@
       "rank_std": 86.03,
       "value_vs_ecr": 294.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4690013,
@@ -7231,7 +7231,7 @@
       "rank_std": 29.98,
       "value_vs_ecr": 212.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 16733,
@@ -7271,7 +7271,7 @@
       "rank_std": 87.39,
       "value_vs_ecr": 98.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4690923,
@@ -7291,7 +7291,7 @@
       "rank_std": 33.59,
       "value_vs_ecr": 284.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4602667,
@@ -7311,7 +7311,7 @@
       "rank_std": 68.36,
       "value_vs_ecr": 302.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4567096,
@@ -7431,7 +7431,7 @@
       "rank_std": 95.04,
       "value_vs_ecr": 154.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4698597,
@@ -7471,7 +7471,7 @@
       "rank_std": 108.18,
       "value_vs_ecr": 116.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3054212,
@@ -7511,7 +7511,7 @@
       "rank_std": 113.94,
       "value_vs_ecr": 108.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4366963,
@@ -7571,7 +7571,7 @@
       "rank_std": 51.76,
       "value_vs_ecr": 34.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3043275,
@@ -7591,7 +7591,7 @@
       "rank_std": 39.88,
       "value_vs_ecr": 26.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4569382,
@@ -7671,7 +7671,7 @@
       "rank_std": 88.29,
       "value_vs_ecr": 289.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3068267,
@@ -7751,7 +7751,7 @@
       "rank_std": 73.41,
       "value_vs_ecr": 228.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4685477,
@@ -7831,7 +7831,7 @@
       "rank_std": 35.66,
       "value_vs_ecr": 257.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4239934,
@@ -7891,7 +7891,7 @@
       "rank_std": 94.87,
       "value_vs_ecr": 272.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3043234,
@@ -7991,7 +7991,7 @@
       "rank_std": 114.96,
       "value_vs_ecr": 243.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3921690,
@@ -8051,7 +8051,7 @@
       "rank_std": 75.49,
       "value_vs_ecr": 236.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4708486,
@@ -8091,7 +8091,7 @@
       "rank_std": 116.57,
       "value_vs_ecr": 232.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3929785,
@@ -8111,7 +8111,7 @@
       "rank_std": 108.69,
       "value_vs_ecr": 254.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4039505,
@@ -8151,7 +8151,7 @@
       "rank_std": 38.26,
       "value_vs_ecr": 179.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4259619,
@@ -8191,7 +8191,7 @@
       "rank_std": 86.74,
       "value_vs_ecr": 162.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4569371,
@@ -8291,7 +8291,7 @@
       "rank_std": 45.57,
       "value_vs_ecr": 177.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4372414,
@@ -8331,7 +8331,7 @@
       "rank_std": 145.77,
       "value_vs_ecr": 49.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4568024,
@@ -8411,7 +8411,7 @@
       "rank_std": 123.78,
       "value_vs_ecr": 122.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4035886,
@@ -8451,7 +8451,7 @@
       "rank_std": 46.97,
       "value_vs_ecr": 61.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4363538,
@@ -8491,7 +8491,7 @@
       "rank_std": 101.82,
       "value_vs_ecr": 196.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4384852,
@@ -8551,7 +8551,7 @@
       "rank_std": 43.3,
       "value_vs_ecr": 233.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 16339,
@@ -8671,7 +8671,7 @@
       "rank_std": 32.39,
       "value_vs_ecr": 204.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4386544,
@@ -8751,7 +8751,7 @@
       "rank_std": 57.12,
       "value_vs_ecr": 166.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 5081335,
@@ -8791,7 +8791,7 @@
       "rank_std": 62.05,
       "value_vs_ecr": 153.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4369886,
@@ -8831,7 +8831,7 @@
       "rank_std": 113.99,
       "value_vs_ecr": 179.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 15835,
@@ -8871,7 +8871,7 @@
       "rank_std": 113.6,
       "value_vs_ecr": -10.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 2577327,
@@ -8911,7 +8911,7 @@
       "rank_std": 79.24,
       "value_vs_ecr": -239.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4869132,
@@ -8931,7 +8931,7 @@
       "rank_std": 108.21,
       "value_vs_ecr": 216.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4035537,
@@ -8951,7 +8951,7 @@
       "rank_std": 98.93,
       "value_vs_ecr": 212.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4245144,
@@ -8971,7 +8971,7 @@
       "rank_std": 53.74,
       "value_vs_ecr": 49.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4037235,
@@ -8991,7 +8991,7 @@
       "rank_std": 99.83,
       "value_vs_ecr": 99.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4431325,
@@ -9031,7 +9031,7 @@
       "rank_std": 131.79,
       "value_vs_ecr": 122.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3051738,
@@ -9051,7 +9051,7 @@
       "rank_std": 141.93,
       "value_vs_ecr": 140.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4039057,
@@ -9071,7 +9071,7 @@
       "rank_std": 130.32,
       "value_vs_ecr": 139.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3127310,
@@ -9091,7 +9091,7 @@
       "rank_std": 34.76,
       "value_vs_ecr": -39.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4685504,
@@ -9131,7 +9131,7 @@
       "rank_std": 42.12,
       "value_vs_ecr": 32.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4876132,
@@ -9151,7 +9151,7 @@
       "rank_std": 48.92,
       "value_vs_ecr": 175.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4714379,
@@ -9191,7 +9191,7 @@
       "rank_std": 81.26,
       "value_vs_ecr": 173.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4594749,
@@ -9371,7 +9371,7 @@
       "rank_std": 99.08,
       "value_vs_ecr": -191.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4040612,
@@ -9391,7 +9391,7 @@
       "rank_std": 33.35,
       "value_vs_ecr": -20.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4426496,
@@ -9411,7 +9411,7 @@
       "rank_std": 42.86,
       "value_vs_ecr": 171.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4383440,
@@ -9431,7 +9431,7 @@
       "rank_std": 62.59,
       "value_vs_ecr": 115.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4361372,
@@ -9451,7 +9451,7 @@
       "rank_std": 42.54,
       "value_vs_ecr": 147.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 5082424,
@@ -9491,7 +9491,7 @@
       "rank_std": 130.13,
       "value_vs_ecr": 144.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4035020,
@@ -9511,7 +9511,7 @@
       "rank_std": 32.51,
       "value_vs_ecr": 92.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4683423,
@@ -9591,7 +9591,7 @@
       "rank_std": 147.67,
       "value_vs_ecr": 126.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4360967,
@@ -9611,7 +9611,7 @@
       "rank_std": 50.82,
       "value_vs_ecr": 173.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4426553,
@@ -9651,7 +9651,7 @@
       "rank_std": 117.89,
       "value_vs_ecr": 171.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4373030,
@@ -9711,7 +9711,7 @@
       "rank_std": 53.05,
       "value_vs_ecr": 153.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4365395,
@@ -9771,7 +9771,7 @@
       "rank_std": 43.33,
       "value_vs_ecr": -101.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 2975863,
@@ -9891,7 +9891,7 @@
       "rank_std": 119.95,
       "value_vs_ecr": 102.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4239944,
@@ -9911,7 +9911,7 @@
       "rank_std": 52.82,
       "value_vs_ecr": 65.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4575665,
@@ -10311,7 +10311,7 @@
       "rank_std": 125.54,
       "value_vs_ecr": -164.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4035004,
@@ -10391,7 +10391,7 @@
       "rank_std": 110.8,
       "value_vs_ecr": 36.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4573697,
@@ -10431,7 +10431,7 @@
       "rank_std": 114.37,
       "value_vs_ecr": 7.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3051889,
@@ -10451,7 +10451,7 @@
       "rank_std": 128.59,
       "value_vs_ecr": 33.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4566158,
@@ -10491,7 +10491,7 @@
       "rank_std": 74.9,
       "value_vs_ecr": 91.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4685540,
@@ -10771,7 +10771,7 @@
       "rank_std": 132.7,
       "value_vs_ecr": 19.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4708049,
@@ -10851,7 +10851,7 @@
       "rank_std": 131.87,
       "value_vs_ecr": 61.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4808759,
@@ -11351,7 +11351,7 @@
       "rank_std": 85.14,
       "value_vs_ecr": 10.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4567747,
@@ -11391,7 +11391,7 @@
       "rank_std": 83.56,
       "value_vs_ecr": -14.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 2972515,
@@ -11431,7 +11431,7 @@
       "rank_std": 83.91,
       "value_vs_ecr": -114.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4372026,
@@ -11451,7 +11451,7 @@
       "rank_std": 92.32,
       "value_vs_ecr": -18.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 4426689,
@@ -11711,7 +11711,7 @@
       "rank_std": 158.64,
       "value_vs_ecr": -205.0,
       "risk": "Volatile",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3924327,
@@ -11891,7 +11891,7 @@
       "rank_std": 109.92,
       "value_vs_ecr": -77.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3123075,
@@ -12111,7 +12111,7 @@
       "rank_std": 134.11,
       "value_vs_ecr": -115.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 11394,
@@ -12131,7 +12131,7 @@
       "rank_std": 57.25,
       "value_vs_ecr": -297.0,
       "risk": "Safe",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 3118892,
@@ -12271,7 +12271,7 @@
       "rank_std": 139.31,
       "value_vs_ecr": -204.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 16760,
@@ -12371,7 +12371,7 @@
       "rank_std": 119.47,
       "value_vs_ecr": -323.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": 2468609,
@@ -12411,7 +12411,7 @@
       "rank_std": 135.13,
       "value_vs_ecr": -529.0,
       "risk": "Balanced",
-      "ceiling": true
+      "ceiling": false
     },
     {
       "player_id": -16034,
