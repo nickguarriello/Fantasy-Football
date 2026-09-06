@@ -71,6 +71,22 @@ regression, `test_draft.py` adp_value blanked for QB/K/DST.
   min later succeeded. If a pre-draft run goes red Monday, just re-trigger; last-good board
   stays live.
 
+**2026-09-05 (cont.) — Expert consensus (ECR) + strategy playbook (workstreams 1 & 2 of 3):**
+- **`docs/strategy.html`** — written decision playbook + curated 2026 lists (targets/fades/
+  upside/injuries/late-round), sourced from ~10 experts (FantasyPros, CBS/Eisenberg, ESPN,
+  Yahoo, NFL.com, RotoBaller, Fantasy Points) via web research, cross-checked vs live ADP.
+- **FantasyPros ECR wired end-to-end.** Free API key (user-provided) → `fantasypros_credentials.py`
+  (gitignored) + `FANTASYPROS_API_KEY` CI secret + workflow step. `fetch_fantasypros_ecr()`
+  scrapes the full ~950-player `ecrData` blob from the public half-PPR cheat-sheet (API is a
+  thin-tier fallback, 10 rows/pos). New `fact_ecr` table; `transform.resolve_ecr()` matches it
+  (619/778 in the live run). `evaluate.add_consensus()` derives `value_vs_ecr` (ADP−ECR —
+  trustworthy for QB, unlike `adp_value`), `risk` (Safe/Balanced/Volatile from expert-rank
+  spread normalised to ECR depth), `ceiling` (bullish-expert flag). Board reordered by ECR.
+- draft.html / cheatsheet.html / draftplan.html all rebuilt around ECR + Value + Risk + ▲.
+- 61 tests (+7). Two CI runs verified end-to-end.
+- **Workstream 3 (live assistant: tier countdown, opponent roster needs, bye conflicts) not
+  started** — do next; wants mock-draft feedback before finalising.
+
 **Not yet done / next:**
 1. **Push + `workflow_dispatch`** to regenerate the board with all three fixes — not committed
    yet, waiting on the user. After the run, eyeball `draft-board.json`: bye coverage for LAR/WSH,
