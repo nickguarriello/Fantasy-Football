@@ -84,8 +84,14 @@ regression, `test_draft.py` adp_value blanked for QB/K/DST.
   spread normalised to ECR depth), `ceiling` (bullish-expert flag). Board reordered by ECR.
 - draft.html / cheatsheet.html / draftplan.html all rebuilt around ECR + Value + Risk + ▲.
 - 61 tests (+7). Two CI runs verified end-to-end.
-- **Workstream 3 (live assistant: tier countdown, opponent roster needs, bye conflicts) not
-  started** — do next; wants mock-draft feedback before finalising.
+- **Workstream 3 (live assistant) — done.** `assistant.html`: best-available now ECR-ranked
+  with a soft need penalty + bye-clash penalty; "My slot" input drives a picks-until-your-turn
+  clock; **Tier Watch** panel (per RB/WR/TE/QB: next-best, how many of that caliber left,
+  survive/thin/take-now verdict scaled to the clock); **board depletion** panel (% of each
+  position's top-120 gone); bye-clash tags; Val/Risk/▲ columns. Manual Mine/Other flow
+  unchanged. Verified in-browser against the live board (bye-clash penalty, need penalty,
+  clock math, tier verdicts all fire correctly). User's mock draft went fine, timings good.
+  **Real end-to-end test with pipelines intact: 2026-09-07 (draft day).**
 
 **Not yet done / next:**
 1. **Push + `workflow_dispatch`** to regenerate the board with all three fixes — not committed
