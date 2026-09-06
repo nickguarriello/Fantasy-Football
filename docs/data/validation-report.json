@@ -2,7 +2,7 @@
   {
     "check": "players_present",
     "status": "pass",
-    "detail": "778 players in dim_players"
+    "detail": "779 players in dim_players"
   },
   {
     "check": "no_duplicate_players",
