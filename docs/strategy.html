@@ -1,0 +1,269 @@
+<meta charset="utf-8" />
+<title>Draft Strategy Playbook — Fantasy Football</title>
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  main.pb { max-width: 900px; }
+  .pb h1 { margin: 0 0 2px; }
+  .pb .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+  .pb h2 {
+    font-size: 15px; margin: 26px 0 8px; padding-bottom: 4px;
+    border-bottom: 1px solid var(--border); color: var(--text);
+  }
+  .pb h3 { font-size: 13.5px; margin: 16px 0 4px; color: var(--accent); }
+  .pb p, .pb li { font-size: 13.5px; line-height: 1.62; }
+  .pb ul { margin: 4px 0 10px; padding-left: 20px; }
+  .pb .lead-rule {
+    border: 1px solid var(--accent); border-radius: 8px; padding: 12px 14px; margin: 12px 0 6px;
+    font-size: 14px; line-height: 1.6;
+  }
+  .pb .toc { columns: 2; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .pb .toc a { color: var(--muted); text-decoration: none; }
+  .pb table { font-size: 13px; margin: 8px 0 14px; }
+  .pb td, .pb th { padding: 5px 9px; vertical-align: top; }
+  .pb .grade { white-space: nowrap; font-weight: 600; }
+  .pb .g-target { color: var(--good); }
+  .pb .g-fade { color: var(--bad); }
+  .pb .g-upside { color: var(--warn); }
+  .pb .note { color: var(--muted); font-size: 12.5px; }
+  .pb .box { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; }
+  @media print {
+    @page { size: portrait; margin: 0.5in; }
+    header.topnav, .banner, .noprint { display: none !important; }
+    body { background: #fff; color: #000; font-size: 10.5px; }
+    main.pb { padding: 0; max-width: none; }
+    .pb h2, .pb h3, .pb .lead-rule, .pb .box { color: #000; border-color: #000; }
+    .pb .g-target, .pb .g-fade, .pb .g-upside, .pb .toc a, .pb .note { color: #000; }
+    .pb .toc { display: none; }
+  }
+</style>
+<main class="pb">
+  <h1>Draft Strategy Playbook</h1>
+  <div class="sub">
+    12-team half-PPR (0.5/rec, 4pt pass TD) · 1QB/2RB/2WR/1TE/1FLEX/1K/1DST · snake.
+    Consensus snapshot as of <b>Sep 2026</b> from FantasyPros (100+ experts), CBS/Eisenberg, ESPN,
+    Yahoo, NFL.com, RotoBaller, Fantasy Points, DraftSharks. Cross-checked against this league's
+    live ADP (~2,900 mock drafts). <b>Guidance, not gospel</b> — re-check injuries draft morning.
+  </div>
+
+  <div class="toc noprint">
+    <a href="#use">How to use this</a> ·
+    <a href="#rule">The one rule</a> ·
+    <a href="#shape">Draft shape by round</a> ·
+    <a href="#slot">By draft slot</a> ·
+    <a href="#live">Reacting live</a> ·
+    <a href="#qb">QB plan</a> ·
+    <a href="#te">TE plan</a> ·
+    <a href="#kdst">K / DST</a> ·
+    <a href="#targets">Targets & values</a> ·
+    <a href="#fades">Fades</a> ·
+    <a href="#upside">Upside swings</a> ·
+    <a href="#injuries">Injury watch</a> ·
+    <a href="#late">Late-round board</a>
+  </div>
+
+  <h2 id="use">How to use this</h2>
+  <p>
+    Before your pick: open <a href="draftplan.html">Draft Plan</a> (your slot's per-pick board) and
+    <a href="assistant.html">Draft Assistant</a> (best available vs. your roster). This page is the
+    <i>why</i> behind those — the plan for each phase and how to adjust when the board doesn't cooperate.
+    Read "The one rule" and "Draft shape" before Monday; keep "Reacting live" and the lists open during.
+  </p>
+
+  <h2 id="rule">The one rule</h2>
+  <div class="lead-rule">
+    <b>Draft the best player available <i>within tiers</i>, weighted to your roster needs. Never reach
+    more than about half a round past a player's ADP.</b> If two players are close, break the tie toward
+    (1) the scarcer position — RB before WR — and (2) the better situation / higher ceiling.
+  </div>
+  <p class="note">
+    Tiers &gt; exact rank. If a position's tier is about to empty and it's a while until your next pick,
+    take the last player in that tier <i>now</i> even if someone at another position grades a hair higher.
+    The drop to the next tier is the real cost.
+  </p>
+
+  <h2 id="shape">Draft shape by round (12-team half-PPR, 2026)</h2>
+  <p>
+    The 2026 consensus is <b>"Modified Hero RB"</b>: lock one bell-cow RB early, then attack the very deep
+    WR pool, and treat rounds 3–6 at RB as a minefield. Zero-RB (no RB until round 7+) is <i>not</i>
+    favored this year — the mid-round RB values dried up and the elite-RB miss is unrecoverable.
+  </p>
+  <table>
+    <tr><th>Round</th><th>Priority</th><th>Notes</th></tr>
+    <tr><td><b>1</b></td><td>Elite RB <i>or</i> elite WR</td>
+      <td>Picks 1–4: take a top RB (Gibbs, Bijan, J. Taylor). Picks 5–12: best WR (Chase, Nacua, ARSB, JSN) or the falling elite RB. An elite TE (Bowers/McBride) is defensible at the 1/2 turn only.</td></tr>
+    <tr><td><b>2–3</b></td><td>WR, WR</td>
+      <td>The deep position — this is where you build strength. One of the two picks can be the other elite TE if you missed at the turn. Avoid RB2 here unless a top-10 RB fell.</td></tr>
+    <tr><td><b>4–6</b></td><td class="g-fade">RB Dead Zone — value only</td>
+      <td>RB hit rates crater: ~35% (Rd 4) → ~24% (Rd 5–6) → ~18% (Rd 7). Don't auto-draft RBs here. Take them only at a clear ADP discount or for a <i>role</i> reason (passing-down work, an injury ahead of them on the depth chart). Otherwise keep taking WR value and your first TE if elite.</td></tr>
+    <tr><td><b>6–8</b></td><td>QB (if you want a top-6), RB depth, TE if punted</td>
+      <td>Maye / Burrow / Hurts / Daniels land here. Also the last shot at a starting-caliber RB2 before it's committee roulette.</td></tr>
+    <tr><td><b>9–12</b></td><td>Mid QB (if you waited), high-upside RB/WR, your RBs' handcuffs</td>
+      <td>Purdy / Goff / Kyler / Dart if you punted QB. Start taking swings, not floor.</td></tr>
+    <tr><td><b>13–15</b></td><td>Upside swings, then K + DST last</td>
+      <td>Rookies with a path to targets, backup RBs one injury from a workhorse role. <b>Never draft K or DST before the last two rounds.</b></td></tr>
+  </table>
+  <p class="note">
+    Rough round math: Round ≈ ADP ÷ 12. A player with ADP 40 goes around the 3/4 turn.
+  </p>
+
+  <h2 id="slot">Adjusting by draft slot</h2>
+  <ul>
+    <li><b>Picks 1–3 (turn at 1/2):</b> You get an elite RB, then wait ~22 picks and pick back-to-back.
+      Take the safest floor at 1.xx, then <b>draft in pairs</b> at the turn — two WRs, or WR + elite TE.
+      Don't count on a specific player surviving the long gap; plan around <i>tiers</i>.</li>
+    <li><b>Picks 4–6:</b> Best mix of value and cadence. Likely an elite WR at 1.xx (or JT/CMC if they slide),
+      then a steady ~11-pick rhythm. Just take best-available-in-tier every time.</li>
+    <li><b>Picks 7–9:</b> The elite-RB tier may be gone — be ready to open RB or WR, and to go WR-WR-WR
+      if that's how the board falls. Your R2/R3 is a strong RB2 window (Walker, Henry, Barkley range).</li>
+    <li><b>Picks 10–12 (turn at 1/2):</b> You pick back-to-back at the 1/2 turn, then wait ~22.
+      Great spot to grab an RB + elite WR pair, or WR + elite TE. Then long wait — bank two you love.</li>
+  </ul>
+
+  <h2 id="live">Reacting live to what your opponents do</h2>
+  <h3>A run just happened (3+ of one position in the last ~5 picks)</h3>
+  <ul>
+    <li><b>You need that position:</b> jump in now — the run is pulling the next tier forward, and waiting
+      means a worse player at a worse cost.</li>
+    <li><b>You don't:</b> do the opposite — everyone just spent capital elsewhere, so the position they
+      skipped is now <i>discounted</i>. Take the value there.</li>
+  </ul>
+  <h3>A tier is about to break</h3>
+  <ul>
+    <li>Count how many players remain in the current tier at each position you might want, and how many
+      picks until you're back up. If <code>players left ≤ picks until your next turn</code>, that tier
+      will be gone — take the last one now.</li>
+  </ul>
+  <h3>It's your pick and nobody jumps out</h3>
+  <ul>
+    <li>Best value in the highest tier available. Tie-break toward RB (scarcer), then toward the player
+      whose team/role gives a higher ceiling.</li>
+    <li>Don't draft your K, DST, or a backup QB while any startable RB/WR/flex option remains.</li>
+    <li>Check byes: if 3+ of your projected <i>starters</i> already share a bye week, take the equal
+      alternative on a different bye.</li>
+  </ul>
+  <h3>Where our board and the crowd disagree</h3>
+  <ul>
+    <li>The board's projections are single-source (ESPN). When our model rank and ADP diverge hard with
+      no concrete reason (no injury, no lost role), lean to <b>ADP</b> — it's ~2,900 real drafts.
+      When there <i>is</i> a concrete reason (see Fades / Injuries), trust the reason.</li>
+  </ul>
+
+  <h2 id="qb">Quarterback plan</h2>
+  <p>
+    Single-QB, 4pt passing TD — QB is <b>replaceable</b>. Ignore the board's QB "rank" column entirely
+    (VBD overrates them and the projections are noisy); use ADP and these tiers.
+  </p>
+  <ul>
+    <li><b>Elite (only if it falls to you ~Rd 3):</b> Josh Allen (ADP ~31). Clear PPG leader. Fine value
+      <i>at that price</i> — never earlier.</li>
+    <li><b>Strong, Rd 5–8:</b> Joe Burrow (~54), Drake Maye (~52), Lamar Jackson (~56), Jalen Hurts (~82),
+      Jayden Daniels (~74). Any one of these is plenty. Target the last of the tier.</li>
+    <li><b>Wait / stream, Rd 9+:</b> Patrick Mahomes (~104), Brock Purdy (~86), Trevor Lawrence (~92),
+      Jared Goff (~101), Bo Nix (~112), Kyler Murray (~133). Pair two late and play matchups.</li>
+    <li><b>Dart throws:</b> Jaxson Dart (~123), Tyler Shough (~143) — see Upside.</li>
+  </ul>
+  <p class="note">Best outcome: be one of the first (Allen at value) or one of the last to take a QB. Avoid the middle scramble.</p>
+
+  <h2 id="te">Tight end plan</h2>
+  <p>Two elite, a big gap, then a deep streamable pool. Either pay up early or wait a long time — the middle is the trap.</p>
+  <ul>
+    <li><b>Elite (Rd 3–4):</b> Brock Bowers (~40), Trey McBride (~39). Weekly positional advantage.
+      <span class="note">McBride carries mild regression risk (169 targets unlikely to repeat, ARI added Jeremiyah Love) — still a top-2 TE.</span></li>
+    <li><b>Next up (Rd 5–7):</b> Colston Loveland (~58), Tyler Warren (~69) — ascending, cheaper.</li>
+    <li><b>Wait pool (Rd 8+):</b> George Kittle (~90), Sam LaPorta (~110), Dallas Goedert (~119),
+      Mark Andrews (~134), Jake Ferguson (~147). Our model likes several of these a lot more than their ADP —
+      good "wait on TE" insurance.</li>
+    <li><b>Punt target (Rd 13+):</b> Juwan Johnson (~155), last year's TE8 if you completely wait.</li>
+  </ul>
+
+  <h2 id="kdst">Kicker &amp; defense</h2>
+  <ul>
+    <li><b>Last two rounds only.</b> No exceptions.</li>
+    <li><b>K:</b> take one of the accurate, good-offense kickers by ADP — Brandon Aubrey, Jason Myers,
+      Ka'imi Fairbairn, Cameron Dicker. Then never think about it — stream on bye.</li>
+    <li><b>DST:</b> our board has no defense ADP, so pick a <b>Week 1 home favorite vs. a weak offense</b>
+      and stream weekly off matchup. Don't pay up for a "name" defense.</li>
+  </ul>
+
+  <h2 id="targets">Targets &amp; values <span class="note">(take at or slightly before ADP — the crowd is a touch low)</span></h2>
+  <table>
+    <tr><th>Player</th><th>Pos · ADP</th><th class="grade">Why</th></tr>
+    <tr><td>Malik Nabers</td><td>WR · ~26</td><td>PPR WR1 ceiling with No. 1-overall upside when healthy; late-2025 usage under-priced.</td></tr>
+    <tr><td>Rashee Rice</td><td>WR · ~17</td><td>Full-season KC alpha role; efficient target share, model's WR18 vs the field's.</td></tr>
+    <tr><td>Javonte Williams</td><td>RB · ~30</td><td>Model rank 12 vs ADP 30 — projected lead role in DAL at a Round-3 price.</td></tr>
+    <tr><td>Omarion Hampton</td><td>RB · ~22</td><td>Rookie workhorse path in LAC; board's RB15 at an RB20-ish cost.</td></tr>
+    <tr><td>Rhamondre Stevenson</td><td>RB · ~63</td><td>RB2 with weekly RB1 upside for a Round-6 price; strong "dead zone value" pick.</td></tr>
+    <tr><td>Rome Odunze</td><td>WR · ~49</td><td>Ascending Year-2 role, model WR50-ish but trending up with Bears' offense.</td></tr>
+    <tr><td>George Kittle</td><td>TE · ~90</td><td>Model TE-value: top-5 TE production at an 8th-round cost if you wait on TE.</td></tr>
+    <tr><td>Sam LaPorta / Mark Andrews / Jake Ferguson</td><td>TE · ~110–147</td><td>Board ranks all three as top-12 TEs going 3–5 rounds after their value.</td></tr>
+  </table>
+
+  <h2 id="fades">Fades <span class="note">(let them pass at their price; not "never draft" — just not there)</span></h2>
+  <table>
+    <tr><th>Player</th><th>Pos · ADP</th><th class="grade g-fade">Why fade</th></tr>
+    <tr><td>Christian McCaffrey</td><td>RB · ~6 (1st rd)</td><td>Age 30, extensive injury history, led NFL in carries last year. Only one RB in 13 years posted a top-5 finish after a 400-touch season. First-round price, second-round risk.</td></tr>
+    <tr><td>De'Von Achane</td><td>RB · ~11</td><td>ADP already sliding; efficiency-and-TD-dependent profile, thin workload floor for a Round-1 cost.</td></tr>
+    <tr><td>George Pickens</td><td>WR · ~19</td><td>Being drafted WR9. Two top-10 fantasy WRs from one Cowboys offense is unlikely; 2025 production leaned on CeeDee Lamb missing time.</td></tr>
+    <tr><td>Quinshon Judkins</td><td>RB · ~49</td><td>Volume-and-TD dependent, low efficiency, rebuilt line, weak offense, Dylan Sampson eats passing-down work. Classic dead-zone landmine.</td></tr>
+    <tr><td>DK Metcalf</td><td>WR · ~63</td><td>25th in yards/route-run, boom-bust weekly; our model is drastically lower (rank ~249). Priced like a WR5, plays like a WR3 with WR6 weeks.</td></tr>
+    <tr><td>Brian Thomas Jr.</td><td>WR · ~71</td><td>Struggled with Trevor Lawrence (58 ypg vs 76 w/ Mac Jones); added target competition (Meyers, P. Washington), rough early schedule.</td></tr>
+    <tr><td>Rico Dowdle</td><td>RB · ~75</td><td>Weak pass protection, Jaylen Warren better fits Rodgers' passing-down needs — Dowdle's role may shrink.</td></tr>
+    <tr><td>Chuba Hubbard</td><td>RB · ~88</td><td>Last in missed-tackle rate &amp; explosive-run rate among qualifiers; lost the job to Dowdle, Brooks looming.</td></tr>
+  </table>
+
+  <h2 id="upside">Upside swings <span class="note">(rounds ~9–15; ceiling over floor)</span></h2>
+  <table>
+    <tr><th>Player</th><th>Pos · ADP</th><th class="grade g-upside">The upside</th></tr>
+    <tr><td>Jaxson Dart</td><td>QB · ~123</td><td>Year-2 leap with Nabers + Skattebo back and a healthier line; late streamer with a top-10 ceiling.</td></tr>
+    <tr><td>Tyler Shough</td><td>QB · ~143</td><td>Kellen Moore offense (very fantasy-friendly play-caller); cheap QB with room to grow.</td></tr>
+    <tr><td>Kyle Monangai</td><td>RB · ~107</td><td>Named breakout — path to lead-back touches in CHI.</td></tr>
+    <tr><td>Calvin Ridley</td><td>WR · ~141</td><td>Titans offense + Cam Ward step forward; WR2 upside at a Round-12 price.</td></tr>
+    <tr><td>Stefon Diggs</td><td>WR · ~97</td><td>1B to McLaurin's 1A in WAS — potentially the cheapest fantasy WR2 in the draft.</td></tr>
+    <tr><td>Keaton Mitchell</td><td>RB · ~156</td><td>Explosive change-of-pace behind Hampton in a McDaniel run scheme — more than just a handcuff (health permitting).</td></tr>
+    <tr><td>Tank Bigsby</td><td>RB · ~161</td><td>One of the better pure handcuffs in the league — league-winner if the starter goes down.</td></tr>
+    <tr><td>MarShawn Lloyd</td><td>RB · ~115</td><td>Lottery ticket with a clear path to a role.</td></tr>
+    <tr><td>Cam Ward</td><td>QB · ~104</td><td>Second-year jump in an improved Titans offense.</td></tr>
+  </table>
+  <p class="note">Also flagged by experts: WR Carnell Tate (TEN rookie), WR Tre' Harris — check if rostered on our board / mock before relying on them.</p>
+
+  <h2 id="injuries">Injury watch — confirm status draft morning</h2>
+  <table>
+    <tr><th>Player</th><th>Issue</th><th class="grade g-fade">Draft-day read</th></tr>
+    <tr><td>Ashton Jeanty (RB, ADP ~23)</td><td>Ankle sprain in practice</td><td>Small chance he's not ready Week 1 — being drafted Rd 2. Discount or have a plan B.</td></tr>
+    <tr><td>Jeremiyah Love (RB, ~29)</td><td>Ankle (preseason game)</td><td>~50/50 for Week 1. Rd 3 price for a maybe.</td></tr>
+    <tr><td>Josh Jacobs (RB, ~75)</td><td>Groin since early August</td><td>Missed preseason; GB optimistic. Monitor.</td></tr>
+    <tr><td>Luther Burden III (WR, ~54)</td><td>Groin</td><td>Out for preseason, questionable Week 1. Fade at current cost.</td></tr>
+    <tr><td>Alvin Kamara (RB)</td><td>Multiple weeks missed</td><td>Doesn't appear Week-1 ready.</td></tr>
+    <tr><td>Keaton Mitchell (RB)</td><td>5+ straight practices missed</td><td>Don't rely on for Week 1 — but cheap enough to stash.</td></tr>
+    <tr><td>Alec Pierce (WR)</td><td>PUP, offseason ankle surgery</td><td>Team expects Week 1; extended absence is a flag.</td></tr>
+  </table>
+
+  <h2 id="late">Late-round board (rounds ~10+)</h2>
+  <ul>
+    <li><b>RB stashes / handcuffs:</b> Keaton Mitchell, Tank Bigsby, MarShawn Lloyd, Ray Davis, Kyle Monangai,
+      Tyjae Spears, Jordan Mason. Prioritize the handcuff to <i>your own</i> early RBs first.</li>
+    <li><b>WR dart throws:</b> Stefon Diggs, Calvin Ridley, Jayden Reed, Jordan Addison, Romeo Doubs,
+      Marvin Mims Jr., Adam Thielen.</li>
+    <li><b>TE punt:</b> Juwan Johnson, or a second cheap TE to pair-and-stream.</li>
+    <li><b>QB late pairs:</b> two of Purdy / Goff / Kyler / Dart / Shough / Mahomes — play weekly matchups.</li>
+    <li><b>Then, last two rounds only:</b> K (Aubrey / Myers / Fairbairn / Dicker), DST (Week-1 matchup pick).</li>
+  </ul>
+
+  <h2>Sources</h2>
+  <p class="note">
+    FantasyPros — <a href="https://www.fantasypros.com/2026/09/7-fantasy-football-draft-landmines-experts-avoid-2026/">draft landmines</a>,
+    <a href="https://www.fantasypros.com/2026/09/20-fantasy-football-injuries-to-monitor-2026/">injuries to monitor</a>,
+    <a href="https://www.fantasypros.com/2026/08/fantasy-football-draft-advice-expert-strategy-for-2026/">draft advice</a>;
+    CBS Sports — <a href="https://www.cbssports.com/fantasy/football/news/jamey-eisenbergs-2026-fantasy-draft-plan/">Eisenberg round-by-round</a>,
+    <a href="https://www.cbssports.com/fantasy/football/news/heath-cummings-2026-fantasy-football-quarterback-tiers-3-0/">QB tiers</a>;
+    ESPN — <a href="https://www.espn.com/fantasy/football/story/_/page/FFSleepBustBreak26-49030808/fantasy-football-2026-rankings-nfl-sleepers-breakouts-busts">sleepers/busts/breakouts</a>,
+    <a href="https://www.espn.com/fantasy/football/story/_/id/49585178/2026-fantasy-football-rankings-tight-end-tiers-te">TE tiers</a>;
+    <a href="https://www.nfl.com/news/2026-nfl-fantasy-football-10-overvalued-undervalued-nfl-players-to-know-before-you-draft">NFL.com over/undervalued</a>;
+    <a href="https://sports.yahoo.com/fantasy/article/fantasy-football-should-you-try-zero-rb-this-season-heres-everything-to-know-for-2026-155220735.html">Yahoo — Zero RB 2026</a>;
+    <a href="https://www.rotoballer.com/fantasy-football-busts-overvalued-players-to-avoid-2026/1915914">RotoBaller busts</a>;
+    <a href="https://www.fantasypoints.com/nfl/articles/2026/players-to-avoid-and-overvalues">Fantasy Points — avoids</a>;
+    <a href="https://www.footballnationusa.com/post/rb-dead-zone-fantasy-football-2026">RB Dead Zone</a>.
+    ADP: <a href="https://fantasyfootballcalculator.com/adp/half-ppr">Fantasy Football Calculator</a> (half-PPR, 12-team).
+  </p>
+</main>
+<script src="assets/nav.js"></script>
