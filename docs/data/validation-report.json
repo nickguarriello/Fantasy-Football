@@ -2,7 +2,7 @@
   {
     "check": "players_present",
     "status": "pass",
-    "detail": "891 players in dim_players"
+    "detail": "915 players in dim_players"
   },
   {
     "check": "no_duplicate_players",
@@ -12,7 +12,7 @@
   {
     "check": "crosswalk_coverage",
     "status": "pass",
-    "detail": "156/168 rostered players crosswalked (93%)"
+    "detail": "157/169 rostered players crosswalked (93%)"
   },
   {
     "check": "projections_present",
