@@ -4,6 +4,43 @@ Running build log — update every session. Newest entry on top.
 
 ---
 
+## 2026-09-24 — Live draft support, then in-season Q&A (no code changes — read-only session)
+
+**The draft happened 2026-09-07.** A prior session (same day) live-supported the user pick-by-pick
+in chat (not through any tool in this repo) — user drafted slot 2, final roster: Dak Prescott /
+Bijan Robinson, Quinshon Judkins, Tony Pollard, Brian Robinson Jr. / Drake London, Rome Odunze,
+Michael Wilson, Calvin Ridley, Adonai Mitchell / Brock Bowers / Steelers D/ST / Evan McPherson.
+That roster only exists in ESPN — nothing about it is in this repo's data.
+
+**This session: pulled season record + ran a waiver-wire review directly against live ESPN data**
+(`pipeline.fetch_espn.get_league()` from an ad-hoc scratchpad script — read-only, no pipeline
+changes) plus real web research for current analyst takes, per explicit user instruction to
+ground recommendations in real sources, not invented opinions. As of the check: **0-2**, last in
+a 12-team league (PF 194.7, PA 247.7 through 2 weeks). Waiver recs given: add Dalton Schultz (TE)
+/ drop Calvin Ridley; stream Carolina Panthers D/ST over Steelers D/ST that week; start Adonai
+Mitchell over Tony Pollard in FLEX. Unknown whether the user executed any of these — a fresh
+session should re-pull current roster/standings rather than assume.
+
+**Real mistake made and corrected mid-session, worth remembering:** stated Tyler Allgeier was
+still on Atlanta (Bijan Robinson's handcuff) from pre-cutoff training knowledge; live ESPN data
+showed he's actually on Arizona (behind Jeremiyah Love, not a Bijan handcuff at all). **Lesson
+enforced going forward: verify player team/role/injury facts against live data
+(`fetch_espn.get_league()` roster pull, or web search) every time — never state a roster/depth-
+chart fact from pretrained knowledge, since it silently goes stale.** Also caught mid-session:
+an initial waiver TE recommendation (Hockenson over Schultz) was picked by ownership-%% proxy
+without actually comparing the two — Schultz was objectively the better add once checked
+head-to-head. **Lesson: when ranking/choosing between options, research and compare all the
+candidates before asserting a pick — not research-the-first-one-and-stop.**
+
+**Not built:** there is still no Phase 3 (in-season) code in this repo — no matchup/roster/
+standings fetch, no `docs/data/*.json` for the season, no dashboard pages beyond the Phase 0/1/2
+draft tooling. All in-season Q&A this session was live ESPN API calls from scratch, not anything
+reusable. If this "ask about my team/waivers" pattern keeps recurring, it's worth actually
+building the Phase 3 spine (DESIGN.md §5) — a `fetch_espn` matchup/roster fetch + a
+`docs/data/season.json` + a simple dashboard page — instead of re-deriving it ad hoc each time.
+
+---
+
 ## 2026-09-05 — Draft-day prep: real ADP, LAR/WSH byes, tier algo rewrite
 
 Draft is **Monday 2026-09-07, 8:15pm EDT** (00:15 UTC Tue 09-08; Labor Day, right before
