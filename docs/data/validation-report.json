@@ -2,7 +2,7 @@
   {
     "check": "players_present",
     "status": "pass",
-    "detail": "942 players in dim_players"
+    "detail": "943 players in dim_players"
   },
   {
     "check": "no_duplicate_players",
@@ -12,11 +12,11 @@
   {
     "check": "crosswalk_coverage",
     "status": "pass",
-    "detail": "161/175 rostered players crosswalked (92%)"
+    "detail": "161/177 rostered players crosswalked (91%)"
   },
   {
     "check": "projections_present",
     "status": "pass",
-    "detail": "14447 ESPN projection rows"
+    "detail": "14513 ESPN projection rows"
   }
 ]
