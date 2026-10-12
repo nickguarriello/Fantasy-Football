@@ -2,7 +2,7 @@
   {
     "check": "players_present",
     "status": "pass",
-    "detail": "943 players in dim_players"
+    "detail": "944 players in dim_players"
   },
   {
     "check": "no_duplicate_players",
@@ -17,6 +17,6 @@
   {
     "check": "projections_present",
     "status": "pass",
-    "detail": "14535 ESPN projection rows"
+    "detail": "14688 ESPN projection rows"
   }
 ]
