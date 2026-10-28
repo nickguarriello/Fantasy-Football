@@ -10,12 +10,12 @@
     {
       "check": "draft_board_populated",
       "status": "ok",
-      "detail": "950 players on board"
+      "detail": "952 players on board"
     },
     {
       "check": "stats_fresh",
       "status": "ok",
-      "detail": "last updated_at=2026-10-27 17:14:41"
+      "detail": "last updated_at=2026-10-28 17:47:03"
     }
   ]
 }
