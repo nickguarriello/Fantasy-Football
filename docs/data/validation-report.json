@@ -12,11 +12,11 @@
   {
     "check": "crosswalk_coverage",
     "status": "warn",
-    "detail": "157/175 rostered players crosswalked (90%)"
+    "detail": "159/177 rostered players crosswalked (90%)"
   },
   {
     "check": "projections_present",
     "status": "pass",
-    "detail": "13571 ESPN projection rows"
+    "detail": "13642 ESPN projection rows"
   }
 ]
